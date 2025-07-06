@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  password     String
+  image        String
+  role         Role           @default(USER)
+  Kumpul_Tugas Kumpul_Tugas[]
+}
+
+model Tugas {
+  id           String         @id @default(uuid())
+  title        String
+  description  String
+  deadline     DateTime
+  createAt     DateTime       @default(now())
+  updateAt     DateTime       @default(now())
+  Kumpul_Tugas Kumpul_Tugas[]
+}
+
+model Kumpul_Tugas {
+  id         String   @id @default(uuid())
+  id_user    String
+  id_tugas   String
+  nama       String
+  nim        String
+  kelompok   Int
+  link_tugas String
+  tugas      Tugas    @relation(fields: [id_tugas], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [id_user], references: [id], onDelete: Cascade)
+  createAt   DateTime @default(now())
+  updateAt   DateTime @default(now())
+}
+
+model Kelompok {
+  id               String             @id @default(uuid())
+  nomor            Int                @unique
+  createAt         DateTime           @default(now())
+  updateAt         DateTime           @default(now())
+  Anggota_Kelompok Anggota_Kelompok[]
+}
+
+model Anggota_Kelompok {
+  id          String    @id @default(uuid())
+  id_kelompok String
+  nama        String
+  nim         String    @unique
+  createAt    DateTime  @default(now())
+  updateAt    DateTime  @default(now())
+  kelompok    Kelompok  @relation(fields: [id_kelompok], references: [id], onDelete: Cascade)
+  absensi     Absensi[]
+}
+
+model Absen {
+  id       String    @id @default(uuid())
+  title    String
+  tanggal  DateTime
+  createAt DateTime  @default(now())
+  updateAt DateTime  @default(now())
+  absensi  Absensi[]
+}
+
+model Absensi {
+  id                  String           @id @default(uuid())
+  id_absen            String
+  id_anggota_kelompok String
+  keterangan          Keterangan
+  alasan              String?
+  metode              AbsenMetode      @default(MANUAL) // <<< FIELD BARU untuk metode absensi
+  createAt            DateTime         @default(now())
+  updateAt            DateTime         @default(now())
+  absen               Absen            @relation(fields: [id_absen], references: [id], onDelete: Cascade)
+  mahasiswa           Anggota_Kelompok @relation(fields: [id_anggota_kelompok], references: [id], onDelete: Cascade)
+}
+
+model Verify {
+  id       String   @id @default(uuid())
+  userId   String
+  code     String
+  createAt DateTime @default(now())
+}
+
+enum Keterangan {
+  Hadir
+  Sakit
+  Izin
+  Alfa
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+// ENUM BARU untuk metode absensi
+enum AbsenMetode {
+  MANUAL            // Untuk absensi manual yang mungkin sudah ada
+  QR_SCAN_BY_ADMIN  // Untuk absensi hasil scan QR oleh admin
+}

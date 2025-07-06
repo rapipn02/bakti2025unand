@@ -1,0 +1,187 @@
+import React from "react";
+import bookLogo from "../../assets/about/Open Book.svg";
+import Seni from "../../assets/about/seni.svg";
+import About1 from "../../assets/about/isometric view of colleagues having meeting.svg";
+import About2 from "../../assets/about/man and woman at work.svg";
+import About3 from "../../assets/about/isometric view of young woman working on laptop.svg";
+import About4 from "../../assets/about/avatar of happy thankful man holding hands near heart.svg";
+export const About = () => {
+  return (
+    <section
+      id="about"
+      className="bg-[linear-gradient(to_bottom,#F6EDDD,#C3851D)]  px-4 pt-28 relative pb-24"
+    >
+      {/* === RINGKASAN === */}
+      <div className="min-h-screen flex flex-col items-center justify-start">
+        {/* Judul */}
+        <div
+          className="text-center text-[#623B1C] text-5xl font-normal font-['Titan_One']"
+          style={{
+            textShadow: `
+              -2px -2px 0 white,
+              2px -2px 0 white,
+              -2px 2px 0 white,
+              2px 2px 0 white,
+              0 0 10px rgba(0, 0, 0, 0.5),
+              0 0 15px rgba(0, 0, 0, 0.4)
+            `,
+          }}
+        >
+          <h1>
+            Tahukah kamu,
+            <br />
+            Apa itu BAKTI UNAND ?
+          </h1>
+        </div>
+
+        {/* Deskripsi */}
+        <h2 className="max-w-3xl text-[#623B1C] text-2xl font-medium font-['Poppins'] mt-10 leading-relaxed text-center">
+          BAKTI atau Bimbingan Aktivitas Kemahasiswaan dalam Tradisi Ilmiah
+          adalah kegiatan pengenalan terhadap program pendidikan, tradisi ilmiah
+          dan pembinaan kegiatan kemahasiswaan di perguruan tinggi bagi
+          mahasiswa baru Universitas Andalas. BAKTI UNAND menghadirkan
+          serangkaian kegiatan yang bertujuan untuk mengenalkan lingkungan
+          kampus kepada mahasiswa baru Universitas Andalas.
+        </h2>
+
+        {/*  Scroll ke detail */}
+        <a className="w-[350px] h-[50px] px-9 py-3 bg-[#623B1C] rounded-[20px] shadow-[0px_5px_6px_0px_rgba(0,0,0,0.25)] flex justify-center items-center gap-2 z-10 mt-8 relative text-orange-100 text-2xl font-bold font-['League_Spartan'] duration-300 hover:scale-110 cursor-pointer">
+          Buku Panduan
+          <img className="w-8 h-8 ml-2" src={bookLogo} alt="Buku Panduan" />
+        </a>
+        {/* Gambar Anda di sini */}
+        <img
+          src={Seni}
+          alt="seni"
+          className="w-3/4 mx-auto mt-10 md:w-auto md:mt-0"
+        />
+      </div>
+
+      {/*  Detail */}
+      <div className="mt-32 max-w-6xl mx-auto px-4 md:px-8 text-[#623B1C] font-['Poppins']">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16">
+          {/* Card 1 */}
+          {/* Card 1 (Padding & perataan teks diubah) */}
+          <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
+              <img
+                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
+                src={About1}
+                alt="Ranger’s Duty"
+              />
+              <div className="flex-1 text-center md:text-center">
+                <h3
+                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
+                  style={{
+                    textShadow: `
+                      -2px -2px 0 white, 2px -2px 0 white,
+                      -2px 2px 0 white, 2px 2px 0 white
+                    `,
+                  }}
+                >
+                  Rangers Afeksi
+                </h3>
+                <p className="font-bold">
+                  salah satu rangkaian kegiatan Pra-BAKTI yang bertujuan untuk
+                  membangun komunikasi antara mentor dengan mahasiswa baru serta
+                  membangun keakraban dalam satu kelompok.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
+              <img
+                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
+                src={About2}
+                alt="Mentor BAKTI"
+              />
+              <div className="flex-1 text-center md:text-center">
+                <h3
+                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
+                  style={{
+                    textShadow: `
+                      -2px -2px 0 white, 2px -2px 0 white,
+                      -2px 2px 0 white, 2px 2px 0 white
+                    `,
+                  }}
+                >
+                  Maba will get cool mentors
+                </h3>
+                <p className="font-bold">
+                  Mahasiswa atau mahasiswi baru akan didampingi uda uni mentor
+                  yang siap membantu serta mendampingi selama rangkaian kegiatan
+                  BAKTI.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
+              <img
+                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
+                src={About3}
+                alt="Maba's Task"
+              />
+              <div className="flex-1 text-center md:text-center">
+                <h3
+                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
+                  style={{
+                    textShadow: `
+                      -2px -2px 0 white, 2px -2px 0 white,
+                      -2px 2px 0 white, 2px 2px 0 white
+                    `,
+                  }}
+                >
+                  Maba's Task
+                </h3>
+                <p className="font-bold">
+                  Setiap mahasiswa baru Universitas Andalas akan diberikan
+                  penugasan selama rangkaian kegiatan BAKTI dengan harapan
+                  mahasiswa baru mendapatkan output sesuai dengan penugasan yang
+                  telah diberikan.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
+              <img
+                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
+                src={About4}
+                alt="Ukm dan Himada"
+              />
+              <div className="flex-1 text-center md:text-center">
+                <h3
+                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
+                  style={{
+                    textShadow: `
+                      -2px -2px 0 white, 2px -2px 0 white,
+                      -2px 2px 0 white, 2px 2px 0 white
+                    `,
+                  }}
+                >
+                  UKM dan HIMADA Universitas Andalas
+                </h3>
+                <p className="font-bold">
+                  Universitas Andalas memiliki berbagai Unit Kegiatan Mahasiswa
+                  (UKM) yang dapat menjadi wadah untuk mahasiswa mengembangkan
+                  soft skill dan hard skill yang dimiliki sesuai dengan bakat
+                  dan minatnya, serta Himpunan Mahasiswa Daerah (HIMADA).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default About;
