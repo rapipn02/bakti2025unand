@@ -131,9 +131,18 @@ const Footer = () => {
 
           <h2 className="text-lg font-bold mb-2 text-center">CONTACT US</h2>
           <p className="text-sm leading-relaxed text-center">
-            +62 897 1504 300 <br />
+            <a
+              href="https://wa.me/628971504300"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#c78317] hover:underline"
+            >
+              +62 897 1504 300
+            </a>
+            <br />
             baktiunand2025@gmail.com
           </p>
+
         </div>
       </div>
 

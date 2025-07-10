@@ -5,14 +5,51 @@ import About1 from "../../assets/about/isometric view of colleagues having meeti
 import About2 from "../../assets/about/man and woman at work.svg";
 import About3 from "../../assets/about/isometric view of young woman working on laptop.svg";
 import About4 from "../../assets/about/avatar of happy thankful man holding hands near heart.svg";
+import Awan from "../../assets/auth/awanfull.svg";
+import BungaOrnamen from "../../assets/timeline/bunga.svg";
 export const About = () => {
+  const bungaPositions = [
+    { top: "15%", left: "10%" },
+    { top: "35%", left: "5%" },
+    { top: "55%", left: "12%" },
+    { top: "75%", left: "8%" },
+    { top: "15%", right: "10%" },
+    { top: "35%", right: "5%" },
+    { top: "55%", right: "12%" },
+    { top: "75%", right: "8%" },
+  ];
   return (
     <section
       id="about"
       className="bg-[linear-gradient(to_bottom,#F6EDDD,#C3851D)]  px-4 pt-28 relative pb-24"
     >
+      {/* Awan Desktop*/}
+      <img
+        src={Awan}
+        alt="Awan Atas Terbalik"
+        className="hidden lg:block absolute left-0 z-5"
+        style={{
+          width: "100%",
+          height: "25vh",
+          objectFit: "cover",
+          top: "-5vh",
+          transform: "scaleY(-1)",
+        }}
+      />
+
+      {/* Ornamen Latar Belakang */}
+      {bungaPositions.map((pos, index) => (
+        <img
+          key={index}
+          src={BungaOrnamen}
+          alt="Ornamen Bunga"
+          className="absolute w-16 md:w-20 z-0 opacity-50"
+          style={pos}
+        />
+      ))}
+
       {/* === RINGKASAN === */}
-      <div className="min-h-screen flex flex-col items-center justify-start">
+      <div className="min-h-screen flex flex-col items-center justify-start mt-16">
         {/* Judul */}
         <div
           className="text-center text-[#623B1C] text-5xl font-normal font-['Titan_One']"
@@ -60,34 +97,39 @@ export const About = () => {
       {/*  Detail */}
       <div className="mt-32 max-w-6xl mx-auto px-4 md:px-8 text-[#623B1C] font-['Poppins']">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16">
-          {/* Card 1 */}
           {/* Card 1 (Padding & perataan teks diubah) */}
           <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
-              <img
-                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
-                src={About1}
-                alt="Ranger’s Duty"
-              />
-              <div className="flex-1 text-center md:text-center">
-                <h3
-                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
-                  style={{
-                    textShadow: `
+            <a
+              href="LINK_GOOGLE_DRIVE_ANDA" // <-- Ganti dengan link Anda
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
+                <img
+                  className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
+                  src={About1}
+                  alt="Rangers Afeksi"
+                />
+                <div className="flex-1 text-center md:text-center">
+                  <h3
+                    className="text-2xl md:text-3xl font-['Titan_One'] mb-4"
+                    style={{
+                      textShadow: `
                       -2px -2px 0 white, 2px -2px 0 white,
                       -2px 2px 0 white, 2px 2px 0 white
                     `,
-                  }}
-                >
-                  Rangers Afeksi
-                </h3>
-                <p className="font-bold">
-                  salah satu rangkaian kegiatan Pra-BAKTI yang bertujuan untuk
-                  membangun komunikasi antara mentor dengan mahasiswa baru serta
-                  membangun keakraban dalam satu kelompok.
-                </p>
+                    }}
+                  >
+                    Rangers Afeksi
+                  </h3>
+                  <p className="font-bold">
+                    salah satu rangkaian kegiatan Pra-BAKTI yang bertujuan untuk
+                    membangun komunikasi antara mentor dengan mahasiswa baru
+                    serta membangun keakraban dalam satu kelompok.
+                  </p>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           {/* Card 2 */}
@@ -100,7 +142,7 @@ export const About = () => {
               />
               <div className="flex-1 text-center md:text-center">
                 <h3
-                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
+                  className="text-2xl md:text-3xl font-['Titan_One'] mb-4"
                   style={{
                     textShadow: `
                       -2px -2px 0 white, 2px -2px 0 white,
@@ -120,63 +162,78 @@ export const About = () => {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
-              <img
-                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
-                src={About3}
-                alt="Maba's Task"
-              />
-              <div className="flex-1 text-center md:text-center">
-                <h3
-                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
-                  style={{
-                    textShadow: `
-                      -2px -2px 0 white, 2px -2px 0 white,
-                      -2px 2px 0 white, 2px 2px 0 white
-                    `,
-                  }}
-                >
-                  Maba's Task
-                </h3>
-                <p className="font-bold">
-                  Setiap mahasiswa baru Universitas Andalas akan diberikan
-                  penugasan selama rangkaian kegiatan BAKTI dengan harapan
-                  mahasiswa baru mendapatkan output sesuai dengan penugasan yang
-                  telah diberikan.
-                </p>
+          <div className="bg-[#F6EDDD] w-full rounded-xl p-12 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
+            <a
+              href="LINK_GOOGLE_DRIVE_ANDA" // <-- Ganti dengan link Anda
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="flex flex-col md:flex-row items-center gap-4 h-full">
+                <img
+                  className="w-full md:w-[200px] h-auto object-contain flex-shrink-0"
+                  src={About3}
+                  alt="Maba's Task"
+                />
+                <div className="flex-1 text-center">
+                  <h3
+                    className="text-3xl font-['Titan_One'] mb-3"
+                    style={{
+                      textShadow: `
+                  -2px -2px 0 white, 2px -2px 0 white,
+                  -2px 2px 0 white, 2px 2px 0 white
+                `,
+                    }}
+                  >
+                    Maba's Task
+                  </h3>
+                  <p className="font-bold text-base">
+                    Setiap mahasiswa baru Universitas Andalas akan diberikan
+                    penugasan selama rangkaian kegiatan BAKTI dengan harapan
+                    mahasiswa baru mendapatkan output sesuai dengan penugasan
+                    yang telah diberikan.
+                  </p>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
 
           {/* Card 4 */}
-          <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
-              <img
-                className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
-                src={About4}
-                alt="Ukm dan Himada"
-              />
-              <div className="flex-1 text-center md:text-center">
-                <h3
-                  className="text-4xl md:text-3xl font-['Titan_One'] mb-4"
-                  style={{
-                    textShadow: `
-                      -2px -2px 0 white, 2px -2px 0 white,
-                      -2px 2px 0 white, 2px 2px 0 white
-                    `,
-                  }}
-                >
-                  UKM dan HIMADA Universitas Andalas
-                </h3>
-                <p className="font-bold">
-                  Universitas Andalas memiliki berbagai Unit Kegiatan Mahasiswa
-                  (UKM) yang dapat menjadi wadah untuk mahasiswa mengembangkan
-                  soft skill dan hard skill yang dimiliki sesuai dengan bakat
-                  dan minatnya, serta Himpunan Mahasiswa Daerah (HIMADA).
-                </p>
+          <div className="bg-[#F6EDDD] w-full rounded-xl p-6 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
+            <a
+              href="https://drive.google.com/drive/folders/1Q6HxFuM5wgYiozcqfAt9Yl4pAwpAHKpq?usp=drive_link" // <-- Ganti dengan link Anda
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="flex flex-col md:flex-row items-center gap-4 h-full">
+                <img
+                  className="w-full md:w-[200px] h-auto object-contain flex-shrink-0"
+                  src={About4}
+                  alt="Ukm dan Himada"
+                />
+                <div className="flex-1 text-center">
+                  <h3
+                    className="text-2xl font-['Titan_One'] mb-3"
+                    style={{
+                      textShadow: `
+                  -2px -2px 0 white, 2px -2px 0 white,
+                  -2px 2px 0 white, 2px 2px 0 white
+                `,
+                    }}
+                  >
+                    UKM dan HIMADA
+                    <br />
+                    Universitas Andalas
+                  </h3>
+                  <p className="font-bold text-base">
+                    Universitas Andalas memiliki berbagai Unit Kegiatan
+                    Mahasiswa (UKM) yang dapat menjadi wadah untuk mahasiswa
+                    mengembangkan soft skill dan hard skill yang dimiliki sesuai
+                    dengan bakat dan minatnya, serta Himpunan Mahasiswa Daerah
+                    (HIMADA).
+                  </p>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>

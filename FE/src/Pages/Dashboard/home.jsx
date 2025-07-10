@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BackgroundImage from "../../assets/auth/background.svg";
 import HomeMobile from "../../assets/auth/baktiunandmobile.svg";
 import Awan from "../../assets/auth/awanfull.svg";
@@ -9,8 +9,32 @@ import Timeline from "./timeline";
 import Task from "./task";
 import Gallery from "./gallery";
 import Footer from "../../component/footer";
+import Loading from "../../component/loading";
+
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const hasLoaded = sessionStorage.getItem("hasLoadedInSession");
+
+    if (!hasLoaded) {
+      // pertama kali buka tab/browser: loading 2 detik
+      const timer = setTimeout(() => {
+        setLoading(false);
+        sessionStorage.setItem("hasLoadedInSession", "true");
+      }, 2000);
+      return () => clearTimeout(timer);
+    } else {
+      // refresh / navigasi: skip loading
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div className="pt-0">
       <Navbar />
@@ -59,31 +83,52 @@ const Home = () => {
             `,
           }}
         >
-          <div className="text-3xl font-normal mt-32 ml-[6rem]">
+          <div className="text-3xl font-normal mt-34 ml-[6rem]">
             BAKTI UNAND
           </div>
           <div className="text-4xl font-normal mt-2 ml-[6rem]">2025</div>
         </div>
-        {/* ====================================================== */}
-        {/* ============ POSISI GAMBAR AWAN KIRI ================ */}
-        {/* ====================================================== */}
+
+        {/* Awan untuk Desktop */}
         <img
           src={Awan}
           alt="Awan Kiri"
-          className="absolute left-0 z-5" // Hapus 'bottom-0' dari sini
+          className="hidden lg:block absolute left-0 z-5"
           style={{
-            width: "55%",
-            height: "30vh",
+            width: "100%",
+            height: "25vh",
             objectFit: "cover",
-            bottom: "-10vh", // TAMBAHKAN INI untuk menurunkan awan
+            bottom: "-10vh",
           }}
         />
 
-        {/* Get Started Button */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 bottom-[55px] w-[225px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[25px] border-2 border-orange-100 z-10 flex items-center justify-center duration-300 hover:scale-105 cursor-pointer">
+        {/* Awan untuk Mobile */}
+        <img
+          src={Awan}
+          alt="Awan Kiri Mobile"
+          className="block lg:hidden absolute left-0 z-5"
+          style={{
+            width: "100%",
+            height: "auto",
+            bottom: "-20vh",
+          }}
+        />
+
+        {/* Get Started Button for Desktop */}
+        <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[75px] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer">
           <a
             href="/login"
             className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+          >
+            Get Started
+          </a>
+        </div>
+
+        {/* Get Started Button for Mobile */}
+        <div className="flex lg:hidden relative mt-2 ml-auto mr-18 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer">
+          <a
+            href="/login"
+            className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
           >
             Get Started
           </a>

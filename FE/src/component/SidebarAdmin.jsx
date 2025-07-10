@@ -22,9 +22,11 @@ const Sidebar = ({ className = "w-64" }) => {
           alt="Logo Bakti Unand"
           className="w-8 h-8 object-contain"
         />
-        <h2 className="font-semibold text-lg whitespace-nowrap">
-          BAKTI UNAND 2025
-        </h2>
+        <Link to="/">
+          <h2 className="font-semibold text-lg whitespace-nowrap hover:text-blue-700 transition-colors cursor-pointer">
+            BAKTI UNAND 2025
+          </h2>
+        </Link>
       </div>
       <nav className="flex-1 px-2 py-4 space-y-1">
         {menus.map((item, i) => (
