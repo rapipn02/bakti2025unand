@@ -1,14 +1,72 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link untuk tombol "Back"
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../../../component/SidebarAdmin";
 import logoadmin from "../../../assets/admin/admin.svg";
-import { Menu, ArrowLeft } from "lucide-react"; // Import ikon panah kiri
+import { Menu, ArrowLeft } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { addTugas } from "../../../utils/tugasApi";
 
 export const AddTugas = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    deadline: ''
+  });
+  const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.title || !formData.deadline) {
+      toast.error('Judul dan deadline harus diisi');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await addTugas({
+        title: formData.title,
+        description: formData.description,
+        deadline: formData.deadline
+      });
+
+      if (result.success) {
+        toast.success(result.message || 'Tugas berhasil ditambahkan');
+        // Reset form
+        setFormData({
+          title: '',
+          description: '',
+          deadline: ''
+        });
+        // Navigate back to tugas list after short delay
+        setTimeout(() => {
+          navigate('/tugas');
+        }, 1500);
+      } else {
+        toast.error(result.error || 'Gagal menambahkan tugas');
+      }
+    } catch (error) {
+      console.error('Error adding tugas:', error);
+      toast.error('Terjadi kesalahan saat menambahkan tugas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-[#f5f6fa] font-sans relative">
+      <Toaster position="top-center" />
+      
       {/* Tombol hamburger */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -71,7 +129,7 @@ export const AddTugas = () => {
                 Add Tugas
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label
                     htmlFor="title"
@@ -82,8 +140,12 @@ export const AddTugas = () => {
                   <input
                     type="text"
                     id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
                     placeholder="Input Title"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
                   />
                 </div>
 
@@ -96,10 +158,13 @@ export const AddTugas = () => {
                   </label>
                   <textarea
                     id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
                     placeholder="Input Description"
                     rows="4"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  ></textarea>
+                  />
                 </div>
 
                 <div className="mb-6">
@@ -112,17 +177,21 @@ export const AddTugas = () => {
                   <input
                     type="date"
                     id="deadline"
-                    placeholder="DD/MM/YYYY"
+                    name="deadline"
+                    value={formData.deadline}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
                   />
                 </div>
 
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="bg-emerald-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-emerald-700 transition-all cursor-pointer hover:scale-105"
+                    disabled={loading}
+                    className="bg-emerald-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-emerald-700 transition-all cursor-pointer hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
-                    Submit
+                    {loading ? 'Submitting...' : 'Submit'}
                   </button>
                 </div>
               </form>

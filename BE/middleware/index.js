@@ -135,4 +135,139 @@ module.exports = {
             })
         }
     },
+    isAdmin: async (req, res, next) => {
+        try {
+            // Pastikan user sudah authenticated
+            if (!req.user) {
+                return res.status(401).json({
+                    status: 401,
+                    message: "Unauthorized - User not authenticated"
+                });
+            }
+
+            // Cek role admin langsung dari req.user (hasil decode token)
+            if (req.user.role !== 'ADMIN') {
+                return res.status(403).json({
+                    status: 403,
+                    message: "Forbidden - Admin access required",
+                    debug: { userRole: req.user.role, required: 'ADMIN' }
+                });
+            }
+
+            return next();
+        } catch (error) {
+            console.log("Admin Middleware Error:", error);
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    validateKelompokId: async (req, res, next) => {
+        try {
+            const { kelompokId } = req.body || req.query || req.params;
+            
+            if (!kelompokId) {
+                return res.status(400).json({
+                    status: 400,
+                    message: "Kelompok ID is required"
+                });
+            }
+
+            // Validasi apakah kelompok exists
+            const kelompok = await prisma.kelompok.findUnique({
+                where: { id: parseInt(kelompokId) }
+            });
+
+            if (!kelompok) {
+                return res.status(404).json({
+                    status: 404,
+                    message: "Kelompok not found"
+                });
+            }
+
+            return next();
+        } catch (error) {
+            console.log("Kelompok Validation Error:", error);
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    validateTugasId: async (req, res, next) => {
+        try {
+            const { tugasId } = req.body || req.query || req.params;
+            
+            if (!tugasId) {
+                return res.status(400).json({
+                    status: 400,
+                    message: "Tugas ID is required"
+                });
+            }
+
+            // Validasi apakah tugas exists
+            const tugas = await prisma.tugas.findUnique({
+                where: { id: tugasId }
+            });
+
+            if (!tugas) {
+                return res.status(404).json({
+                    status: 404,
+                    message: "Tugas not found"
+                });
+            }
+
+            return next();
+        } catch (error) {
+            console.log("Tugas Validation Error:", error);
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    rateLimiter: (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
+        const requests = new Map();
+        
+        return (req, res, next) => {
+            const clientId = req.ip || req.connection.remoteAddress;
+            const now = Date.now();
+            
+            // Clean old entries
+            for (const [ip, data] of requests.entries()) {
+                if (now - data.windowStart > windowMs) {
+                    requests.delete(ip);
+                }
+            }
+            
+            // Check current client
+            const clientData = requests.get(clientId);
+            
+            if (!clientData) {
+                requests.set(clientId, {
+                    count: 1,
+                    windowStart: now
+                });
+                return next();
+            }
+            
+            if (now - clientData.windowStart > windowMs) {
+                // Reset window
+                clientData.count = 1;
+                clientData.windowStart = now;
+                return next();
+            }
+            
+            if (clientData.count >= maxRequests) {
+                return res.status(429).json({
+                    status: 429,
+                    message: "Too many requests, please try again later"
+                });
+            }
+            
+            clientData.count++;
+            return next();
+        };
+    },
 }

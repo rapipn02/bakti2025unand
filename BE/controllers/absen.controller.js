@@ -395,3 +395,184 @@ exports.AdminScanParticipantQR = async (req, res) => {
         });
     }
 };
+
+// QR Scan for absensi
+exports.ScanQRAbsensi = async (req, res) => {
+    try {
+        const { nim, kelompok, id_absen, metode = 'QR_SCAN_BY_ADMIN' } = req.body;
+
+        // Validasi input
+        if (!nim || !id_absen) {
+            return res.status(400).json({
+                status: 400,
+                message: "NIM dan id_absen diperlukan"
+            });
+        }
+
+        // Cari sesi absen
+        const absenSession = await prisma.absen.findUnique({
+            where: { id: id_absen }
+        });
+
+        if (!absenSession) {
+            return res.status(404).json({
+                status: 404,
+                message: "Sesi absen tidak ditemukan"
+            });
+        }
+
+        // Cari mahasiswa berdasarkan NIM
+        const mahasiswa = await prisma.anggota_Kelompok.findUnique({
+            where: { nim: nim },
+            include: {
+                kelompok: true
+            }
+        });
+
+        if (!mahasiswa) {
+            return res.status(404).json({
+                status: 404,
+                message: `Mahasiswa dengan NIM ${nim} tidak ditemukan`
+            });
+        }
+
+        // Validasi kelompok jika disediakan
+        if (kelompok && mahasiswa.kelompok.nomor !== parseInt(kelompok)) {
+            return res.status(400).json({
+                status: 400,
+                message: `Mahasiswa ${mahasiswa.nama} terdaftar di kelompok ${mahasiswa.kelompok.nomor}, bukan kelompok ${kelompok}`
+            });
+        }
+
+        // Cek apakah sudah absen
+        const existingAbsensi = await prisma.absensi.findFirst({
+            where: {
+                id_absen: id_absen,
+                id_anggota_kelompok: mahasiswa.id
+            }
+        });
+
+        if (existingAbsensi) {
+            if (existingAbsensi.keterangan === "Hadir") {
+                return res.status(409).json({
+                    status: 409,
+                    message: `${mahasiswa.nama} (NIM: ${nim}) sudah tercatat HADIR`,
+                    data: existingAbsensi
+                });
+            } else {
+                // Update status menjadi Hadir
+                const updatedAbsensi = await prisma.absensi.update({
+                    where: { id: existingAbsensi.id },
+                    data: {
+                        keterangan: "Hadir",
+                        metode: metode,
+                        alasan: "Absensi melalui scan QR code"
+                    }
+                });
+
+                return res.status(200).json({
+                    status: 200,
+                    message: `Status absensi ${mahasiswa.nama} (NIM: ${nim}) diperbarui menjadi HADIR`,
+                    data: updatedAbsensi
+                });
+            }
+        } else {
+            // Buat record absensi baru
+            const newAbsensi = await prisma.absensi.create({
+                data: {
+                    id_absen: id_absen,
+                    id_anggota_kelompok: mahasiswa.id,
+                    keterangan: "Hadir",
+                    metode: metode,
+                    alasan: "Absensi melalui scan QR code"
+                }
+            });
+
+            return res.status(201).json({
+                status: 201,
+                message: `Absensi ${mahasiswa.nama} (NIM: ${nim}) berhasil dicatat sebagai HADIR`,
+                data: newAbsensi
+            });
+        }
+
+    } catch (error) {
+        console.error("Scan QR Absensi Error:", error);
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+};
+
+// Update status kehadiran anggota
+exports.UpdateStatusKehadiran = async (req, res) => {
+    try {
+        const { anggota_id, absen_id, status_kehadiran } = req.body;
+
+        // Validasi input
+        if (!anggota_id || !absen_id || !status_kehadiran) {
+            return res.status(400).json({
+                status: 400,
+                message: "anggota_id, absen_id, dan status_kehadiran diperlukan"
+            });
+        }
+
+        // Validasi status_kehadiran
+        const validStatuses = ['Hadir', 'Alfa', 'Sakit', 'Izin'];
+        if (!validStatuses.includes(status_kehadiran)) {
+            return res.status(400).json({
+                status: 400,
+                message: "Status kehadiran harus salah satu dari: " + validStatuses.join(', ')
+            });
+        }
+
+        // Cek apakah record absensi sudah ada
+        const existingAbsensi = await prisma.absensi.findFirst({
+            where: {
+                id_anggota_kelompok: anggota_id,
+                id_absen: absen_id
+            }
+        });
+
+        let result;
+        if (existingAbsensi) {
+            // Update existing record
+            result = await prisma.absensi.update({
+                where: {
+                    id: existingAbsensi.id
+                },
+                data: {
+                    keterangan: status_kehadiran, // Fix: use correct field name
+                    metode: status_kehadiran === 'Hadir' ? existingAbsensi.metode || 'MANUAL' : 'MANUAL', // Fix: use correct field name and enum value
+                    alasan: `Status diubah menjadi ${status_kehadiran} oleh admin`
+                }
+            });
+        } else {
+            // Create new record
+            result = await prisma.absensi.create({
+                data: {
+                    id_anggota_kelompok: anggota_id,
+                    id_absen: absen_id,
+                    keterangan: status_kehadiran, // Fix: use correct field name
+                    metode: 'MANUAL', // Fix: use correct field name and enum value
+                    alasan: `Status diset ke ${status_kehadiran} oleh admin`
+                }
+            });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            message: `Status kehadiran berhasil diubah menjadi ${status_kehadiran}`,
+            data: result
+        });
+
+    } catch (error) {
+        console.log("Absen Controller Error (UpdateStatusKehadiran):", error);
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+};

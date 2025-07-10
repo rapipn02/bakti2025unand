@@ -3,52 +3,125 @@ import Sidebar from "../../../component/SidebarAdmin";
 import { ArrowLeft, Menu } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import logoadmin from "../../../assets/admin/admin.svg";
-
-// 1. Impor Toaster dan toast dari library
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { addKelompok } from "../../../utils/kelompokApi";
 
 export const AddKelompok = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [nomorKelompok, setNomorKelompok] = useState("");
-  const [noIdKelompok, setNoIdKelompok] = useState("");
-  const [jumlahAnggota, setJumlahAnggota] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!nomorKelompok || !noIdKelompok || !jumlahAnggota) {
-      // Anda juga bisa mengganti ini dengan toast error
-      toast.error("Semua field wajib diisi!");
+    if (!nomorKelompok) {
+      toast.error("Nomor kelompok wajib diisi!");
       return;
     }
 
-    const newGroup = {
-      id: Date.now(),
-      namaKegiatan: `Kegiatan Kelompok ${nomorKelompok}`,
-      kelompok: nomorKelompok,
-      anggota: jumlahAnggota,
-      noId: noIdKelompok,
-    };
+    // Validasi nomor kelompok harus berupa angka
+    const nomor = parseInt(nomorKelompok);
+    if (isNaN(nomor) || nomor <= 0) {
+      toast.error("Nomor kelompok harus berupa angka positif!");
+      return;
+    }
 
-    const existingGroups = JSON.parse(localStorage.getItem("groupData")) || [];
-    const updatedGroups = [...existingGroups, newGroup];
-    localStorage.setItem("groupData", JSON.stringify(updatedGroups));
+    setLoading(true);
+    try {
+      // Coba tambah via API terlebih dahulu
+      const result = await addKelompok({ nomor });
+      
+      if (result.success) {
+        toast.success(result.message || "Kelompok berhasil ditambahkan!");
+        
+        // Pindah ke halaman kelompok setelah berhasil
+        setTimeout(() => {
+          navigate("/kelompok");
+        }, 1500);
+      } else {
+        // Jika API gagal, gunakan localStorage sebagai fallback
+        console.warn('API add failed, using localStorage:', result.error);
+        
+        // Periksa data yang sudah ada di localStorage
+        const existingData = JSON.parse(localStorage.getItem('kelompokData') || '[]');
+        
+        // Cek apakah nomor kelompok sudah ada
+        const isDuplicate = existingData.some(group => group.nomor === nomor);
+        if (isDuplicate) {
+          toast.error(`Kelompok ${nomor} sudah ada!`);
+          setLoading(false);
+          return;
+        }
 
-    // 3. Ganti alert() dengan toast.success()
-    toast.success("Kelompok berhasil ditambahkan!");
+        // Buat data kelompok baru
+        const newKelompok = {
+          id: Date.now().toString(), // ID sederhana untuk localStorage
+          nomor: nomor,
+          anggota: 0, // Default 0 anggota
+          createdAt: new Date().toISOString()
+        };
 
-    // Beri sedikit jeda agar user bisa melihat notifikasi sebelum pindah halaman
-    setTimeout(() => {
-      navigate("/kelompok");
-    }, 1500); // Pindah halaman setelah 1.5 detik
+        // Tambahkan ke array yang sudah ada
+        const updatedData = [...existingData, newKelompok];
+        
+        // Simpan ke localStorage
+        localStorage.setItem('kelompokData', JSON.stringify(updatedData));
+        
+        toast.success("Kelompok berhasil ditambahkan (offline)!");
+        
+        // Pindah ke halaman kelompok setelah berhasil
+        setTimeout(() => {
+          navigate("/kelompok");
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error adding kelompok:', error);
+      
+      // Fallback ke localStorage jika ada error
+      try {
+        // Periksa data yang sudah ada di localStorage
+        const existingData = JSON.parse(localStorage.getItem('kelompokData') || '[]');
+        
+        // Cek apakah nomor kelompok sudah ada
+        const isDuplicate = existingData.some(group => group.nomor === nomor);
+        if (isDuplicate) {
+          toast.error(`Kelompok ${nomor} sudah ada!`);
+          setLoading(false);
+          return;
+        }
+
+        // Buat data kelompok baru
+        const newKelompok = {
+          id: Date.now().toString(),
+          nomor: nomor,
+          anggota: 0,
+          createdAt: new Date().toISOString()
+        };
+
+        // Tambahkan ke array yang sudah ada
+        const updatedData = [...existingData, newKelompok];
+        
+        // Simpan ke localStorage
+        localStorage.setItem('kelompokData', JSON.stringify(updatedData));
+        
+        toast.success("Kelompok berhasil ditambahkan (offline)!");
+        
+        // Pindah ke halaman kelompok setelah berhasil
+        setTimeout(() => {
+          navigate("/kelompok");
+        }, 1500);
+      } catch (storageError) {
+        console.error('Storage error:', storageError);
+        toast.error("Terjadi kesalahan saat menambahkan kelompok");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex h-screen bg-[#f5f6fa] font-sans relative">
-      {/* 2. Tambahkan komponen <Toaster /> di mana saja dalam return.
-          Biasanya diletakkan di bagian paling atas atau bawah. */}
-      <Toaster position="top-center" reverseOrder={false} />
 
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -106,58 +179,41 @@ export const AddKelompok = () => {
                       htmlFor="kelompok"
                       className="block mb-2 font-semibold text-gray-700"
                     >
-                      Kelompok
-                    </label>
-                    <input
-                      type="text"
-                      id="kelompok"
-                      value={nomorKelompok}
-                      onChange={(e) => setNomorKelompok(e.target.value)}
-                      placeholder="Input nomor kelompok"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A96E]"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="noId"
-                      className="block mb-2 font-semibold text-gray-700"
-                    >
-                      No ID
-                    </label>
-                    <input
-                      type="text"
-                      id="noId"
-                      value={noIdKelompok}
-                      onChange={(e) => setNoIdKelompok(e.target.value)}
-                      placeholder="Input no ID kelompok"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A96E]"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="anggota"
-                      className="block mb-2 font-semibold text-gray-700"
-                    >
-                      Anggota
+                      Nomor Kelompok
                     </label>
                     <input
                       type="number"
-                      id="anggota"
-                      value={jumlahAnggota}
-                      onChange={(e) => setJumlahAnggota(e.target.value)}
-                      placeholder="Input jumlah anggota kelompok"
+                      id="kelompok"
+                      value={nomorKelompok}
+                      onChange={(e) => setNomorKelompok(e.target.value)}
+                      placeholder="Input nomor kelompok (contoh: 1, 2, 3)"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00A96E]"
                       required
+                      min="1"
                     />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Masukkan nomor unik untuk kelompok ini
+                    </p>
                   </div>
+                  
                   <div className="flex justify-end pt-4">
                     <button
                       type="submit"
-                      className="px-8 py-2 font-bold text-white bg-emerald-500 rounded-full hover:bg-emerald-700 transition-all cursor-pointer hover:scale-105"
+                      disabled={loading}
+                      className={`px-8 py-2 font-bold text-white rounded-full transition-all cursor-pointer hover:scale-105 ${
+                        loading 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-emerald-500 hover:bg-emerald-700'
+                      }`}
                     >
-                      Submit
+                      {loading ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Menyimpan...
+                        </div>
+                      ) : (
+                        'Submit'
+                      )}
                     </button>
                   </div>
                 </div>

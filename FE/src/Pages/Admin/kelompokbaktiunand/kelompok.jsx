@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../../component/SidebarAdmin";
 import logoadmin from "../../../assets/admin/admin.svg";
-import { Menu, AlertTriangle } from "lucide-react"; // Impor AlertTriangle untuk ikon
+import { Menu, AlertTriangle, Users, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { getKelompokWithAnggota, deleteKelompok } from "../../../utils/kelompokApi";
 
 // --- BAGIAN 1: Komponen Modal didefinisikan di sini ---
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
@@ -50,14 +51,70 @@ export const Kelompok = () => {
   const [groupData, setGroupData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const dataFromStorage = JSON.parse(localStorage.getItem("groupData")) || [];
-    setGroupData(dataFromStorage);
+    loadKelompokData();
   }, []);
 
-  const handleOpenDeleteModal = (groupId) => {
-    setItemToDelete(groupId);
+  const loadKelompokData = async () => {
+    setLoading(true);
+    let notificationShown = false;
+    
+    try {
+      // Coba ambil data dari API terlebih dahulu
+      const result = await getKelompokWithAnggota();
+      if (result.success && result.data) {
+        setGroupData(result.data);
+        // Simpan ke localStorage sebagai backup
+        localStorage.setItem('kelompokData', JSON.stringify(result.data));
+      } else {
+        // Jika API gagal, gunakan data dari localStorage
+        console.warn('API failed, using localStorage data:', result.error);
+        const storedData = localStorage.getItem('kelompokData');
+        if (storedData) {
+          const data = JSON.parse(storedData);
+          setGroupData(data);
+          toast.error('Menggunakan data offline. Periksa koneksi API.');
+          notificationShown = true;
+        } else {
+          setGroupData([]);
+          if (!notificationShown) {
+            toast.error('Gagal memuat data kelompok');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading kelompok data:', error);
+      // Fallback ke localStorage jika ada error
+      try {
+        const storedData = localStorage.getItem('kelompokData');
+        if (storedData) {
+          const data = JSON.parse(storedData);
+          setGroupData(data);
+          if (!notificationShown) {
+            toast.error('API tidak tersedia, menggunakan data offline.');
+          }
+        } else {
+          setGroupData([]);
+          if (!notificationShown) {
+            toast.error('Tidak ada data kelompok tersedia');
+          }
+        }
+      } catch (storageError) {
+        console.error('Storage error:', storageError);
+        setGroupData([]);
+        if (!notificationShown) {
+          toast.error('Gagal memuat data kelompok');
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenDeleteModal = (kelompok) => {
+    setItemToDelete(kelompok);
     setIsModalOpen(true);
   };
 
@@ -66,22 +123,43 @@ export const Kelompok = () => {
     setIsModalOpen(false);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (itemToDelete) {
-      const updatedGroups = groupData.filter(
-        (group) => group.id !== itemToDelete
-      );
-      setGroupData(updatedGroups);
-      localStorage.setItem("groupData", JSON.stringify(updatedGroups));
-
-      toast.success("Data berhasil dihapus!");
-      handleCloseModal();
+      try {
+        // Coba hapus dari API terlebih dahulu
+        const result = await deleteKelompok(itemToDelete.id);
+        if (result.success) {
+          toast.success(result.message || 'Kelompok berhasil dihapus!');
+          // Refresh data dari API
+          await loadKelompokData();
+        } else {
+          // Jika API gagal, hapus dari localStorage
+          console.warn('API delete failed, using localStorage:', result.error);
+          const updatedData = groupData.filter(group => group.id !== itemToDelete.id);
+          setGroupData(updatedData);
+          localStorage.setItem('kelompokData', JSON.stringify(updatedData));
+          toast.success('Kelompok berhasil dihapus (mode offline)');
+        }
+      } catch (error) {
+        console.error('Error deleting kelompok:', error);
+        // Fallback ke localStorage delete
+        try {
+          const updatedData = groupData.filter(group => group.id !== itemToDelete.id);
+          setGroupData(updatedData);
+          localStorage.setItem('kelompokData', JSON.stringify(updatedData));
+          toast.success('Kelompok berhasil dihapus (mode offline)');
+        } catch (storageError) {
+          console.error('Storage delete error:', storageError);
+          toast.error('Gagal menghapus kelompok');
+        }
+      } finally {
+        handleCloseModal();
+      }
     }
   };
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
-      <Toaster position="top-center" />
 
       {/* Sidebar dan Header */}
       <div className="hidden md:flex md:flex-shrink-0">
@@ -133,7 +211,7 @@ export const Kelompok = () => {
           <div className="mb-6">
             <Link
               to="/addkelompok"
-              className="inline-block text-center bg-emerald-500 text-white text-lg px-4 py-2 rounded-md mb-4 hover:bg-emerald-700 shadow cursor-pointer w-full sm:w-auto font-['League_Spartan'] duration-300 hover:scale-105 trasnsition-all"
+              className="inline-block text-center bg-emerald-500 text-white text-lg px-4 py-2 rounded-md mb-4 hover:bg-emerald-700 shadow cursor-pointer w-full sm:w-auto font-['League_Spartan'] duration-300 hover:scale-105 transition-all"
             >
               + Add Kelompok
             </Link>
@@ -144,7 +222,7 @@ export const Kelompok = () => {
                 <tr>
                   <th className="py-3 px-4 font-semibold text-gray-600">No</th>
                   <th className="py-3 px-4 font-semibold text-gray-600">
-                    No. ID Kelompok
+                    ID Kelompok
                   </th>
                   <th className="py-3 px-4 font-semibold text-gray-600">
                     Kelompok
@@ -158,34 +236,65 @@ export const Kelompok = () => {
                 </tr>
               </thead>
               <tbody>
-                {groupData.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-8">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-500"></div>
+                        <span className="ml-2 text-gray-500">Memuat data...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : groupData.length > 0 ? (
                   groupData.map((group, index) => (
                     <tr
                       key={group.id}
                       className="border-b border-gray-400 hover:bg-gray-50"
                     >
                       <td className="py-4 px-4 text-gray-700">{index + 1}</td>
-                      <td className="py-4 px-4 text-gray-800">{group.noId}</td>
-                      <td className="py-4 px-4 text-gray-700">
-                        {group.kelompok}
+                      <td className="py-4 px-4 text-gray-800">
+                        <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                          {group.id ? (typeof group.id === 'string' && group.id.length > 10 ? `${group.id.substring(0, 8)}...` : group.id) : 'N/A'}
+                        </span>
                       </td>
                       <td className="py-4 px-4 text-gray-700">
-                        {group.anggota}
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-emerald-600" />
+                          <span className="font-medium">Kelompok {group.nomor}</span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-gray-700">
+                        <div className="flex items-center gap-2">
+                          <UserPlus className="w-4 h-4 text-blue-600" />
+                          <span>{group.Anggota_Kelompok?.length || group.anggota || 0} orang</span>
+                        </div>
                       </td>
                       <td className="py-4 px-4">
-                        <button
-                          onClick={() => handleOpenDeleteModal(group.id)}
-                          className="bg-red-100 text-sm text-red-600 font-semibold px-4 py-1 rounded-md hover:bg-red-200 cursor-pointer duration-300 hover:scale-105"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex gap-2">
+                          <Link
+                            to={`/anggotakelompok?kelompok=${group.id}`}
+                            className="bg-blue-100 text-sm text-blue-600 font-semibold px-3 py-1 rounded-md hover:bg-blue-200 cursor-pointer duration-300 hover:scale-105"
+                          >
+                            Detail
+                          </Link>
+                          <button
+                            onClick={() => handleOpenDeleteModal(group)}
+                            className="bg-red-100 text-sm text-red-600 font-semibold px-3 py-1 rounded-md hover:bg-red-200 cursor-pointer duration-300 hover:scale-105"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan="5" className="text-center py-10 text-gray-500">
-                      Belum ada data. Silakan tambahkan kelompok baru.
+                      <div className="flex flex-col items-center">
+                        <Users className="w-12 h-12 text-gray-300 mb-2" />
+                        <p>Belum ada data kelompok.</p>
+                        <p className="text-sm">Silakan tambahkan kelompok baru.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -200,8 +309,8 @@ export const Kelompok = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={confirmDelete}
-        title="Hapus Data"
-        message="Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan."
+        title="Hapus Kelompok"
+        message={`Apakah Anda yakin ingin menghapus Kelompok ${itemToDelete?.nomor}? Semua anggota dalam kelompok ini juga akan terhapus. Tindakan ini tidak dapat dibatalkan.`}
       />
     </div>
   );

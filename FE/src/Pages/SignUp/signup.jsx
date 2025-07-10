@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth.jsx";
+import toast from 'react-hot-toast';
 import backgroundSignup from "../../assets/signup/newsignup.svg";
 import RumahGadang2 from "../../assets/signup/rumahgadang1.svg";
 import RumahGadangMobile from "../../assets/Login/BAKTI UNAND 2025 kiri.svg";
@@ -9,6 +11,31 @@ import BaktiUnandLogo from "../../assets/Login/Bakti.svg";
 export const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { register, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error("Semua field harus diisi!");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Konfirmasi password tidak cocok!");
+      return;
+    }
+    const result = await register({ name, email, password, confirmPassword });
+    if (result.success) {
+      toast.success("Registrasi berhasil! Silakan login.");
+      navigate("/login");
+    } else {
+      toast.error(result.error || "Registrasi gagal!");
+    }
+  };
 
   return (
     <div className="relative min-h-screen flex flex-col md:flex-row">
@@ -104,6 +131,7 @@ export const Signup = () => {
         <form
           className="flex flex-col gap-4 w-full max-w-sm mx-auto text-[#603813] font-semibold mt-8"
           style={{ textShadow: "0px 1px 2px rgba(255, 255, 255, 0.7)" }}
+          onSubmit={handleRegister}
         >
           {/* Nama Pengguna */}
           <div>
@@ -112,6 +140,9 @@ export const Signup = () => {
               type="text"
               placeholder="Masukkan Nama Pengguna"
               className="w-full px-4 py-3 rounded-xl border border-[#a67c52] bg-[#fefaf1] placeholder:text-[#c0a68a] focus:outline-none focus:ring-1 focus:ring-[#8D6E63]"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
             />
           </div>
 
@@ -122,6 +153,9 @@ export const Signup = () => {
               type="email"
               placeholder="Masukkan Email"
               className="w-full px-4 py-3 rounded-xl border border-[#a67c52] bg-[#fefaf1] placeholder:text-[#c0a68a] focus:outline-none focus:ring-1 focus:ring-[#8D6E63]"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
             />
           </div>
 
@@ -133,6 +167,9 @@ export const Signup = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Masukkan Kata Sandi"
                 className="flex-1 outline-none placeholder:text-[#c0a68a] bg-transparent"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
               />
               <button
                 type="button"
@@ -188,6 +225,9 @@ export const Signup = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Konfirmasi Kata Sandi"
                 className="flex-1 outline-none placeholder:text-[#c0a68a] bg-transparent"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
               />
               <button
                 type="button"
@@ -238,8 +278,8 @@ export const Signup = () => {
           </div>
 
           {/* Tombol Daftar */}
-          <button className="w-full bg-[#8D6E63] text-white font-bold py-3 mt-6 rounded-xl shadow-md hover:bg-[#6D4C41] transition duration-300 hover:scale-105 cursor-pointer">
-            DAFTAR
+          <button className="w-full bg-[#8D6E63] text-white font-bold py-3 mt-6 rounded-xl shadow-md hover:bg-[#6D4C41] transition duration-300 hover:scale-105 cursor-pointer" type="submit" disabled={loading}>
+            {loading ? 'Memproses...' : 'DAFTAR'}
           </button>
 
           {/* Link Mobile ke Login */}

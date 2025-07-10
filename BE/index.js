@@ -1,7 +1,9 @@
+require('dotenv').config();
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+
 const express = require("express");
 const app = express();
-require("dotenv").config();
-const port = process.env.APP_PORT;
+const port = process.env.APP_PORT || 4000;
 const cors = require("cors")
 app.use(express.json())
 // app.use(cors())

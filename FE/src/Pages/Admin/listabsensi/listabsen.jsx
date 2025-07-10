@@ -2,28 +2,49 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../../component/SidebarAdmin";
 import logoadmin from "../../../assets/admin/admin.svg";
 import { Menu, AlertTriangle } from "lucide-react";
-
-// 1. Impor dari react-hot-toast
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { getAbsenList, deleteAbsen, editAbsen } from "../../../utils/absenApi";
 
 export const ListAbsen = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem("absenData")) || [];
-    const formattedData = storedData.map((item) => {
-      if (item.tanggal && item.tanggal.includes("-")) {
-        const [year, month, day] = item.tanggal.split("-");
-        return { ...item, tanggal: `${day}/${month}/${year}` };
+  // Fetch data from backend
+  const fetchAbsenData = async () => {
+    setLoading(true);
+    try {
+      const result = await getAbsenList();
+      if (result.success) {
+        // Format data untuk tampilan
+        const formattedData = result.data.map((item) => ({
+          ...item,
+          tanggal: new Date(item.tanggal).toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: '2-digit', 
+            year: 'numeric'
+          })
+        }));
+        setData(formattedData);
+      } else {
+        toast.error(result.error || 'Gagal memuat data absen');
+        setData([]);
       }
-      return item;
-    });
-    setData(formattedData);
+    } catch (error) {
+      console.error('Error fetching absen data:', error);
+      toast.error('Terjadi kesalahan saat memuat data');
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAbsenData();
   }, []);
 
   const handleDeleteClick = (id) => {
@@ -31,53 +52,63 @@ export const ListAbsen = () => {
     setIsConfirmModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!itemToDelete) return;
 
-    const updatedData = data.filter((item) => item.id !== itemToDelete);
-    setData(updatedData);
-
-    const rawDataToStore = JSON.parse(
-      localStorage.getItem("absenData") || "[]"
-    ).filter((d) => d.id !== itemToDelete);
-    localStorage.setItem("absenData", JSON.stringify(rawDataToStore));
+    try {
+      const result = await deleteAbsen(itemToDelete);
+      if (result.success) {
+        // Refresh data setelah berhasil delete
+        await fetchAbsenData();
+        toast.success("Data berhasil dihapus!");
+      } else {
+        toast.error(result.error || 'Gagal menghapus data');
+      }
+    } catch (error) {
+      console.error('Error deleting absen:', error);
+      toast.error('Terjadi kesalahan saat menghapus data');
+    }
 
     setIsConfirmModalOpen(false);
     setItemToDelete(null);
-
-    // Panggilan notifikasi ini tetap sama
-    toast.success("Data berhasil dihapus!");
   };
 
   const handleEdit = (item) => {
+    // Convert from display format (DD/MM/YYYY) to input format (YYYY-MM-DD)
     const [day, month, year] = item.tanggal.split("/");
-    setCurrentItem({ ...item, tanggal: `${year}-${month}-${day}` });
+    setCurrentItem({ ...item, tanggal: `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` });
     setIsEditModalOpen(true);
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    const updatedData = data.map((item) =>
-      item.id === currentItem.id ? currentItem : item
-    );
-    localStorage.setItem("absenData", JSON.stringify(updatedData));
-    const formattedData = updatedData.map((item) => {
-      if (item.tanggal && item.tanggal.includes("-")) {
-        const [year, month, day] = item.tanggal.split("-");
-        return { ...item, tanggal: `${day}/${month}/${year}` };
-      }
-      return item;
-    });
-    setData(formattedData);
+    
+    try {
+      const updateData = {
+        id: currentItem.id,
+        title: currentItem.title,
+        tanggal: currentItem.tanggal
+      };
 
-    setIsEditModalOpen(false);
-    setCurrentItem(null);
+      const result = await editAbsen(updateData);
+      
+      if (result.success) {
+        // Refresh data setelah berhasil update
+        await fetchAbsenData();
+        toast.success("Data berhasil diperbarui!");
+        setIsEditModalOpen(false);
+        setCurrentItem(null);
+      } else {
+        toast.error(result.error || 'Gagal memperbarui data');
+      }
+    } catch (error) {
+      console.error('Error updating absen:', error);
+      toast.error('Terjadi kesalahan saat memperbarui data');
+    }
   };
 
   return (
     <div className="flex h-screen bg-[#f5f6fa] font-sans relative">
-      {/* 2. Ganti komponen menjadi <Toaster /> */}
-      <Toaster position="top-center" />
 
       {/* ... sisa kode Anda (tidak ada yang berubah) ... */}
       <button
@@ -136,7 +167,16 @@ export const ListAbsen = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.length === 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="8" className="text-center py-5">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-500"></div>
+                        <span className="ml-2 text-gray-500">Memuat data...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : data.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="text-center py-5 text-gray-500">
                       Belum ada data. Silakan tambahkan list absen baru.
@@ -146,12 +186,12 @@ export const ListAbsen = () => {
                   data.map((item, index) => (
                     <tr key={item.id} className="border-t hover:bg-green-50">
                       <td className="py-2">{index + 1}</td>
-                      <td className="py-2">{item.kegiatan}</td>
+                      <td className="py-2">{item.title}</td>
                       <td className="py-2">{item.tanggal}</td>
-                      <td className="py-2">0</td>
-                      <td className="py-2">0</td>
-                      <td className="py-2">0</td>
-                      <td className="py-2">0</td>
+                      <td className="py-2">{item.hadir || 0}</td>
+                      <td className="py-2">{item.alfa || 0}</td>
+                      <td className="py-2">{item.sakit || 0}</td>
+                      <td className="py-2">{item.izin || 0}</td>
                       <td className="py-2 space-x-2">
                         <button
                           onClick={() => handleEdit(item)}
@@ -186,11 +226,12 @@ export const ListAbsen = () => {
                 </label>
                 <input
                   type="text"
-                  value={currentItem.kegiatan}
+                  value={currentItem.title || ''}
                   onChange={(e) =>
-                    setCurrentItem({ ...currentItem, kegiatan: e.target.value })
+                    setCurrentItem({ ...currentItem, title: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  required
                 />
               </div>
               <div className="mb-4">

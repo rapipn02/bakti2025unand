@@ -5,14 +5,18 @@ const multer = require("multer")
 const storage = multer.memoryStorage();
 const upload = multer(storage)
 
+// Admin routes - CRUD Tugas
+router.get("/", middleware.authentication, middleware.isAdmin, tugasController.GetTugas)
+router.post("/", middleware.authentication, middleware.isAdmin, tugasController.AddTugas)
+router.put("/", middleware.authentication, middleware.isAdmin, tugasController.EditTugas)
+router.delete("/", middleware.authentication, middleware.isAdmin, tugasController.DeleteTugas)
 
-router.get("/", middleware.authentication, tugasController.GetTugas)
-router.post("/", middleware.authentication, tugasController.AddTugas)
-router.put("/", middleware.authentication, tugasController.EditTugas)
-router.delete("/", middleware.authentication, tugasController.DeleteTugas)
-router.get("/kumpul/all", middleware.authentication, tugasController.GetKumpulTugas)
-router.get("/kumpul", middleware.authentication, tugasController.GetKumpulTugasByKelompok)
-router.get("/kumpul/search", middleware.authentication, tugasController.SearchGetKumpulTugasByKelompok)
+// Admin routes - View Kumpul Tugas
+router.get("/kumpul/all", middleware.authentication, middleware.isAdmin, tugasController.GetKumpulTugas)
+router.get("/kumpul", middleware.authentication, middleware.isAdmin, tugasController.GetKumpulTugasByKelompok)
+router.get("/kumpul/search", middleware.authentication, middleware.isAdmin, tugasController.SearchGetKumpulTugasByKelompok)
+
+// User routes - Submit Tugas
 router.post("/kumpul", middleware.authentication, middleware.isNim, tugasController.KumpulTugas)
 router.put("/kumpul", middleware.authentication, middleware.isNim, tugasController.EditKumpulTugas)
 

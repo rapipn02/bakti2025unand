@@ -7,8 +7,13 @@ const {
 } = require("../utils/utils");
 const prisma = require("../prisma");
 const crypto = require("crypto");
-
+const { OAuth2Client } = require("google-auth-library");
 const nodemailer = require("nodemailer");
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "YOUR_CLIENT_ID";
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "YOUR_CLIENT_SECRET";
+const REDIRECT_URI =
+  process.env.GOOGLE_REDIRECT_URI || "http://localhost:4000/auth/google/callback";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -98,32 +103,19 @@ exports.Login = async (req, res) => {
 exports.LoginWithGoogle = async (req, res) => {
   try {
     const { name, email, password, image } = req.body;
-    console.log(req.body);
-
-    const user = await prisma.user.findFirst({
-      where: {
-        email: email,
-      },
-    });
+    let user = await prisma.user.findFirst({ where: { email } });
 
     if (user) {
-      const isPasswordCorrect = comparePassword(password, user.password);
-      if (!isPasswordCorrect) {
-        return res.status(401).json({
-          status: 401,
-          message: "Email or Password is wrong",
-        });
-      }
-
-      const dataUser = { ...user, password: "-" };
+      // Jangan cek password, langsung login
+      const dataUser = { ...user, password: '-' };
       const token = generateToken(dataUser);
-
       return res.status(200).json({
         status: 200,
         data: { ...dataUser },
         token,
       });
     } else {
+      // Buat user baru
       const newUser = await prisma.user.create({
         data: {
           name,
@@ -132,23 +124,8 @@ exports.LoginWithGoogle = async (req, res) => {
           password: hashPassword(password),
         },
       });
-      if (!newUser) {
-        return res.status(402).json({
-          status: 402,
-          message: "Failed to make new account",
-        });
-      }
-      const isPasswordCorrect = comparePassword(password, newUser.password);
-      if (!isPasswordCorrect) {
-        return res.status(401).json({
-          status: 401,
-          message: "Email/Nim or Password is wrong",
-        });
-      }
-
-      const dataUser = { ...newUser, password: "-" };
+      const dataUser = { ...newUser, password: '-' };
       const token = generateToken(dataUser);
-
       return res.status(201).json({
         status: 201,
         data: { ...dataUser },
@@ -156,10 +133,10 @@ exports.LoginWithGoogle = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Login Controller Error:", error);
+    console.log('Login Controller Error:', error);
     return res.status(500).json({
       status: 500,
-      message: "Internal Server Error",
+      message: 'Internal Server Error',
       error,
     });
   }
@@ -303,5 +280,54 @@ exports.CheckCode = async (req, res) => {
       message: "Internal Server Error",
       error,
     });
+  }
+};
+
+// Redirect user to Google login
+exports.googleAuthRedirect = (req, res) => {
+  const scope = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+  ];
+  const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+    REDIRECT_URI
+  )}&response_type=code&scope=${encodeURIComponent(scope.join(" "))}`;
+  res.redirect(url);
+};
+
+// Handle Google callback
+exports.googleAuthCallback = async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.status(400).json({ message: "No code provided" });
+  try {
+    const { tokens } = await new OAuth2Client(
+      CLIENT_ID,
+      CLIENT_SECRET,
+      REDIRECT_URI
+    ).getToken(code);
+    const client = new OAuth2Client(CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    // Find or create user
+    let user = await prisma.user.findFirst({ where: { email: payload.email } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: payload.name,
+          email: payload.email,
+          image: payload.picture,
+          password: hashPassword("google_" + payload.sub),
+        },
+      });
+    }
+    const dataUser = { ...user, password: "-" };
+    const token = generateToken(dataUser);
+    // Redirect to frontend with token (or set cookie, etc)
+    res.redirect(`http://localhost:5173/login?token=${token}`);
+  } catch (err) {
+    res.status(500).json({ message: "Google login failed", error: err.message });
   }
 };

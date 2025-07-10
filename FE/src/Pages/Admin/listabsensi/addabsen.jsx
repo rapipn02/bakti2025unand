@@ -3,47 +3,52 @@ import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../../../component/SidebarAdmin";
 import logoadmin from "../../../assets/admin/admin.svg";
 import { Menu, ArrowLeft } from "lucide-react";
-
-// 1. Impor Toaster dan toast
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { addAbsen } from "../../../utils/absenApi";
 
 export const AddAbsen = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [deadline, setDeadline] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title || !deadline) {
-      // Ganti alert dengan toast.error
       toast.error("Judul dan tanggal tidak boleh kosong!");
       return;
     }
 
-    const existingData = JSON.parse(localStorage.getItem("absenData")) || [];
-    const newData = {
-      id: Date.now(),
-      kegiatan: title,
-      tanggal: deadline,
-    };
-    const updatedData = [...existingData, newData];
-    localStorage.setItem("absenData", JSON.stringify(updatedData));
+    setLoading(true);
+    try {
+      const absenData = {
+        title: title,
+        tanggal: deadline
+      };
 
-    // Tambahkan notifikasi sukses
-    toast.success("Absen berhasil ditambahkan!");
-
-    // Beri jeda sebelum navigasi agar notifikasi terlihat
-    setTimeout(() => {
-      navigate("/listabsen");
-    }, 1500);
+      const result = await addAbsen(absenData);
+      
+      if (result.success) {
+        toast.success("Absen berhasil ditambahkan!");
+        // Beri jeda sebelum navigasi agar notifikasi terlihat
+        setTimeout(() => {
+          navigate("/listabsen");
+        }, 1500);
+      } else {
+        toast.error(result.error || 'Gagal menambahkan absen');
+      }
+    } catch (error) {
+      console.error('Error adding absen:', error);
+      toast.error('Terjadi kesalahan saat menambahkan absen');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex h-screen bg-[#f5f6fa] font-sans relative">
-      {/* 2. Tambahkan komponen Toaster */}
-      <Toaster position="top-center" />
 
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -130,9 +135,14 @@ export const AddAbsen = () => {
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="bg-emerald-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-emerald-700 transition-all hover:scale-105 cursor-pointer"
+                    disabled={loading}
+                    className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                      loading 
+                        ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                        : 'bg-emerald-500 text-white hover:bg-emerald-700 hover:scale-105 cursor-pointer'
+                    }`}
                   >
-                    Submit
+                    {loading ? 'Menyimpan...' : 'Submit'}
                   </button>
                 </div>
               </form>

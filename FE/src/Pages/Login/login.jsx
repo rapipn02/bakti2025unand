@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth.jsx";
+import toast from 'react-hot-toast';
+import GoogleLoginButton from "../../components/GoogleLoginButton";
 
 // Path gambar Anda
 import backgroundLogin from "../../assets/Login/newlogin.svg";
@@ -13,14 +16,48 @@ export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  
+  const { login, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Submitting with:", { email, password });
+    
+    if (!email || !password) {
+      toast.error("Email dan password harus diisi!");
+      return;
+    }
+
+    const result = await login({ email, password });
+    
+    if (result.success) {
+      toast.success("Login berhasil!");
+      // Role-based redirect
+      const userRole = result.user?.role;
+      
+      if (userRole === 'ADMIN') {
+        navigate('/absensi'); // Admin ke halaman absensi
+      } else {
+        navigate('/'); // User biasa ke halaman utama
+      }
+    } else {
+      toast.error(result.error || "Login gagal!");
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Initiating Google Login...");
+  const handleGoogleSuccess = (userData) => {
+    // Role-based redirect setelah Google login
+    const userRole = userData?.role;
+    
+    if (userRole === 'ADMIN') {
+      navigate('/absensi'); // Admin ke halaman absensi
+    } else {
+      navigate('/'); // User biasa ke halaman utama
+    }
+  };
+
+  const handleGoogleError = (error) => {
+    console.error('Google login error:', error);
   };
 
   return (
@@ -165,20 +202,11 @@ export const Login = () => {
               atau
             </div>
 
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="relative w-full bg-white border border-[#623B1C] py-3 rounded-xl flex items-center justify-center hover:bg-gray-50 transition"
-            >
-              <img
-                src={GoogleLogo}
-                alt="Google"
-                className="h-5 w-5 absolute left-4"
-              />
-              <span className="text-[#603813] cursor-pointer font-semibold">
-                Lanjutkan dengan Google
-              </span>
-            </button>
+            <GoogleLoginButton 
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              disabled={loading}
+            />
 
             {/* Mobile-only Daftar section */}
             <div className="block md:hidden text-center mt-8">

@@ -594,3 +594,110 @@ exports.GetAllAnggotaKelompok = async (req, res) => {
         })
     }
 }
+
+// Get anggota kelompok with their absensi status for specific kegiatan
+exports.GetAnggotaKelompokWithAbsensi = async (req, res) => {
+    try {
+        const { id_kelompok, id_absen } = req.query;
+
+        if (!id_kelompok || !id_absen) {
+            return res.status(400).json({
+                status: 400,
+                message: "id_kelompok dan id_absen diperlukan"
+            });
+        }
+
+        // Get all anggota in kelompok with their absensi status for the specific kegiatan
+        const anggotaKelompok = await prisma.anggota_Kelompok.findMany({
+            where: {
+                id_kelompok: id_kelompok
+            },
+            include: {
+                kelompok: true,
+                absensi: {
+                    where: {
+                        id_absen: id_absen
+                    }
+                }
+            },
+            orderBy: {
+                nama: "asc"
+            }
+        });
+
+        // Transform data to include status kehadiran
+        const transformedData = anggotaKelompok.map(anggota => {
+            const absensiRecord = anggota.absensi[0]; // Should only be one record per student per kegiatan
+            
+            return {
+                id: anggota.id,
+                nama: anggota.nama,
+                nim: anggota.nim,
+                kelompok_nomor: anggota.kelompok.nomor,
+                status_kehadiran: absensiRecord ? absensiRecord.keterangan : null,
+                waktu_absen: absensiRecord ? absensiRecord.createAt : null,
+                metode_absen: absensiRecord ? absensiRecord.metode : null,
+                alasan: absensiRecord ? absensiRecord.alasan : null
+            };
+        });
+
+        return res.status(200).json({
+            status: 200,
+            message: "Berhasil mengambil data anggota kelompok dengan status absensi",
+            data: transformedData
+        });
+
+    } catch (error) {
+        console.log("Get Anggota Kelompok With Absensi Error:", error);
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+}
+
+// Get anggota by NIM - for QR generation
+exports.GetAnggotaByNim = async (req, res) => {
+    try {
+        const { nim } = req.params;
+
+        if (!nim) {
+            return res.status(400).json({
+                status: 400,
+                message: "NIM diperlukan"
+            });
+        }
+
+        const anggota = await prisma.anggota_Kelompok.findUnique({
+            where: {
+                nim: nim
+            },
+            include: {
+                kelompok: true
+            }
+        });
+
+        if (!anggota) {
+            return res.status(404).json({
+                status: 404,
+                message: `Anggota dengan NIM ${nim} tidak ditemukan`
+            });
+        }
+
+        return res.status(200).json({
+            status: 200,
+            success: true,
+            message: "Berhasil mengambil data anggota",
+            data: anggota
+        });
+
+    } catch (error) {
+        console.log("Get Anggota By NIM Controller Error:", error);
+        return res.status(500).json({
+            status: 500,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+}
