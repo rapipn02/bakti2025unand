@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         ...userData,
         confirmPassword: userData.confirmPassword || userData.password
       };
-      const response = await fetch('http://localhost:4000/auth/', {
+      const response = await fetch(`${API_BASE_URL}/auth/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   // Fungsi untuk Google Login
   const googleLogin = async (userData) => {
     try {
-      const response = await fetch('http://localhost:4000/auth/google-login', {
+      const response = await fetch(`${API_BASE_URL}/auth/google-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
