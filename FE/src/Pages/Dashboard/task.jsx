@@ -1,8 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MotifKiri from "../../assets/task/mendung.svg";
 import MotifKanan from "../../assets/task/mendung kanan.svg";
+import { getTugasList } from "../../utils/tugasApi";
 
 export const Task = () => {
+  const [tugas, setTugas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchTugas = async () => {
+      setLoading(true);
+      setError("");
+      const result = await getTugasList();
+      if (result.success) {
+        setTugas(result.data);
+      } else {
+        setError(result.error || "Gagal memuat tugas");
+      }
+      setLoading(false);
+    };
+    fetchTugas();
+  }, []);
+
   return (
     <section
       id="task"
@@ -50,9 +70,17 @@ export const Task = () => {
                 tugas yang sudah kami siapkan untuk mengenalkan kehidupan kampus
                 dan menunjukkan keterampilan diri kamu.
               </p>
-              <button className="mt-6 px-10 py-2.5 bg-[#623B1C] text-white font-bold font-['Poppins'] rounded-2xl shadow-md border-2 border-white/50 hover:scale-105 transition-transform duration-300">
-                Your Task
-              </button>
+              {loading ? (
+                <p className="mt-4 text-xs text-gray-500">Memuat tugas...</p>
+              ) : error ? (
+                <p className="mt-4 text-xs text-red-500">{error}</p>
+              ) : (
+                <a href="/pengumpulantugas">
+                  <button className="mt-6 px-10 py-2.5 bg-[#623B1C] text-white font-bold font-['Poppins'] rounded-2xl shadow-md border-2 border-white/50 hover:scale-105 transition-transform duration-300">
+                    Your Task
+                  </button>
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -102,8 +130,6 @@ export const Task = () => {
               yang sudah kami siapkan untuk mengenalkan kehidupan kampus dan
               menunjukkan keterampilan diri kamu.
             </p>
-
-            {/* Tombol */}
             <a href="/pengumpulantugas">
               <button className="mt-8 px-10 py-3 bg-[#623B1C] text-white font-bold font-['Poppins'] rounded-xl shadow-md border transition duration-300 hover:scale-105 cursor-pointer">
                 Your Task

@@ -3,6 +3,7 @@
     "dotenv": "^17.2.0",
     "google-auth-library": "^10.1.0",
     "html5-qrcode": "^2.3.8",
+    "jwt-decode": "^4.0.0",
     "qrcode.react": "^4.2.0"
   }
 }

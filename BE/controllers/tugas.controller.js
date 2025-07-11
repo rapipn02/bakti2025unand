@@ -438,10 +438,40 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
         })
     }
 }
+
 exports.KumpulTugas = async (req, res) => {
     try {
+        const { id_user, id_tugas, nama, nim, kelompok, link_tugas } = req.body;
 
-        const { id_user, id_tugas, nama, nim, kelompok, link_tugas } = req.body
+        // Cek apakah user sudah pernah mengumpulkan tugas ini sebelumnya
+        const existingSubmission = await prisma.kumpul_Tugas.findFirst({
+            where: {
+                id_user,
+                id_tugas
+            }
+        });
+
+        if (existingSubmission) {
+            return res.status(409).json({ // 409 Conflict is a good status code for this
+                status: 409,
+                message: "Anda sudah pernah mengumpulkan tugas ini.",
+            });
+        }
+
+        // Ambil data tugas untuk cek deadline
+        const tugas = await prisma.tugas.findUnique({ where: { id_tugas } });
+        if (!tugas) {
+            return res.status(404).json({
+                status: 404,
+                message: "Tugas tidak ditemukan."
+            });
+        }
+        if (tugas.deadline && new Date() > new Date(tugas.deadline)) {
+            return res.status(400).json({
+                status: 400,
+                message: "Pengumpulan tugas sudah melewati deadline. Tidak dapat submit lagi."
+            });
+        }
 
         const data = await prisma.kumpul_Tugas.create({
             data: {
@@ -452,20 +482,19 @@ exports.KumpulTugas = async (req, res) => {
                 kelompok,
                 link_tugas
             }
-        })
+        });
 
         if (data) {
             return res.status(200).json({
                 status: 200,
                 message: "Berhasil mengumpulkan tugas",
                 data
-            })
+            });
         } else {
             return res.status(400).json({
                 status: 400,
-                message: "Gagal mengumpulkan tugas",
-                data
-            })
+                message: "Gagal mengumpulkan tugas"
+            });
         }
 
     } catch (error) {
@@ -474,9 +503,9 @@ exports.KumpulTugas = async (req, res) => {
             status: 500,
             message: "Internal Server Error",
             error
-        })
+        });
     }
-}
+};
 exports.EditKumpulTugas = async (req, res) => {
     try {
         const { id, nama, nim, kelompok, link_tugas } = req.body

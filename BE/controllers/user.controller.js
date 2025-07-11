@@ -19,8 +19,8 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
   auth: {
-    user: "pipkttzy@gmail.com",
-    pass: "cavv kcgo jqps hudi",
+    user: "baktiunand2025@gmail.com",
+    pass: "fani dhmo nuxq eyvk",
   },
 });
 
@@ -198,8 +198,8 @@ exports.GenerateCode = async (req, res) => {
     }
     const info = await transporter.sendMail({
       from: {
-        name: "Bakti Unand 2024",
-        address: "pipkttzy@gmail.com",
+        name: "Bakti Unand 2025",
+        address: "baktiunand2025@gmail.com",
       },
       to: `${req.query.email}`,
       subject: "Recovery Password",

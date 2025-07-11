@@ -92,7 +92,15 @@ export const searchKumpulTugasByKelompok = async (kelompok, searchBy, searchValu
 // Add new tugas
 export const addTugas = async (tugasData) => {
   try {
-    const response = await api.post('/tugas/', tugasData);
+    // Pastikan deadline ISO string
+    let deadline = tugasData.deadline;
+    if (deadline && !deadline.includes('T')) {
+      deadline = deadline + 'T00:00:00.000Z';
+    }
+    const response = await api.post('/tugas/', {
+      ...tugasData,
+      deadline
+    });
     return {
       success: true,
       data: response.data.data,

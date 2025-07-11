@@ -1,8 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import backgroundbakti from "../../assets/auth/BAKTIUNAND2025.svg";
 import logobakti from "../../assets/auth/Bakti.svg";
 
 const Lupasandi = () => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccessMsg("");
+    setErrorMsg("");
+    try {
+      // Request verification code (step 1)
+      const response = await fetch(
+        `http://localhost:4000/auth/generate-code?email=${encodeURIComponent(email)}`,
+        {
+          method: "POST",
+        }
+      );
+      const result = await response.json();
+      if (response.ok && result.status === 200) {
+        setSuccessMsg("Kode verifikasi telah dikirim ke email Anda.");
+      } else {
+        setErrorMsg(result.message || "Gagal mengirim kode verifikasi.");
+      }
+    } catch (err) {
+      setErrorMsg("Terjadi kesalahan. Silakan coba lagi.");
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Background Image */}
@@ -33,7 +63,7 @@ const Lupasandi = () => {
             </span>
           </div>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <label
               htmlFor="email"
               className="block text-sm text-[#623B1C] mb-1"
@@ -45,14 +75,24 @@ const Lupasandi = () => {
               id="email"
               placeholder="Masukkan Email"
               className="w-full px-4 py-2 mb-5 rounded-xl border border-[#a67c52] bg-white/90 text-[#623B1C] placeholder:text-[#c0a68a] focus:outline-none focus:ring-2 focus:ring-[#a67c52]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
 
             <button
               type="submit"
               className="w-full py-2 text-white font-bold bg-[#a67c52] rounded-xl hover:bg-[#623B1C] transition duration-300"
+              disabled={loading}
             >
-              Submit
+              {loading ? "Mengirim..." : "Submit"}
             </button>
+            {successMsg && (
+              <p className="text-green-600 text-sm mt-3 text-center">{successMsg}</p>
+            )}
+            {errorMsg && (
+              <p className="text-red-600 text-sm mt-3 text-center">{errorMsg}</p>
+            )}
           </form>
         </div>
       </div>
@@ -79,7 +119,7 @@ const Lupasandi = () => {
             </span>
           </div>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <label
               htmlFor="email"
               className="block text-sm text-[#623B1C] mb-1"
@@ -91,14 +131,24 @@ const Lupasandi = () => {
               id="email"
               placeholder="Masukkan Email"
               className="w-full px-4 py-2 mb-5 rounded-xl border border-[#a67c52] bg-white text-[#623B1C] placeholder:text-[#c0a68a] focus:outline-none focus:ring-2 focus:ring-[#a67c52]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
 
             <button
               type="submit"
               className="w-full py-2 text-white font-bold bg-[#a67c52] rounded-xl hover:bg-[#623B1C] transition duration-300 hover:scale-105"
+              disabled={loading}
             >
-              Submit
+              {loading ? "Mengirim..." : "Submit"}
             </button>
+            {successMsg && (
+              <p className="text-green-600 text-sm mt-3 text-center">{successMsg}</p>
+            )}
+            {errorMsg && (
+              <p className="text-red-600 text-sm mt-3 text-center">{errorMsg}</p>
+            )}
           </form>
         </div>
       </div>

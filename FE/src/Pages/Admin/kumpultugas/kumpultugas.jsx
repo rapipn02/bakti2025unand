@@ -204,20 +204,16 @@ export const Kumpultugas = () => {
     }
 
     try {
-      const selectedKelompokData = kelompokList.find(k => k.id == selectedKelompok);
+      const selectedKelompokData = kelompokList.find(k => String(k.id) === String(selectedKelompok));
       const selectedTugasData = tugasList.find(t => t.id == selectedTugas);
-      
       // Create CSV content
       const headers = ["No", "Name", "NIM", "Kelompok", "Tugas", "Link Tugas", "Submitted"];
+      const kelompokName = selectedKelompokData ? `Kelompok ${selectedKelompokData.nomor}` : 'N/A';
       const csvContent = [
         headers.join(","),
         ...submissions.map((item, index) => {
-          const kelompokName = typeof item.kelompok === 'object' 
-            ? (item.kelompok?.nomor ? `Kelompok ${item.kelompok.nomor}` : `Kelompok ${item.kelompok}`)
-            : `Kelompok ${item.kelompok}`;
           const tugasTitle = item.tugas?.title || item.tugas || "N/A";
           const submittedDate = item.createAt ? new Date(item.createAt).toLocaleDateString() : "N/A";
-          
           return [
             index + 1,
             `"${item.nama || item.name || ""}"`,
@@ -263,13 +259,27 @@ export const Kumpultugas = () => {
 
   // Get kelompok name
   const getKelompokName = (kelompokData) => {
+    // Jika object dan ada nomor
     if (typeof kelompokData === 'object' && kelompokData?.nomor) {
       return `Kelompok ${kelompokData.nomor}`;
     }
-    if (typeof kelompokData === 'number' || typeof kelompokData === 'string') {
-      return `Kelompok ${kelompokData}`;
+    // Jika object dan ada id, cari di kelompokList
+    if (typeof kelompokData === 'object' && kelompokData?.id && kelompokList.length > 0) {
+      const found = kelompokList.find(k => String(k.id) === String(kelompokData.id));
+      if (found && found.nomor) {
+        return `Kelompok ${found.nomor}`;
+      }
+      return 'N/A';
     }
-    return "N/A";
+    // Jika number/string, cari di kelompokList
+    if ((typeof kelompokData === 'number' || typeof kelompokData === 'string') && kelompokList.length > 0) {
+      const found = kelompokList.find(k => String(k.id) === String(kelompokData));
+      if (found && found.nomor) {
+        return `Kelompok ${found.nomor}`;
+      }
+      return 'N/A';
+    }
+    return 'N/A';
   };
 
   // Get tugas title
@@ -416,7 +426,7 @@ export const Kumpultugas = () => {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-4 4a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
@@ -521,25 +531,41 @@ export const Kumpultugas = () => {
                           </td>
                           <td className="py-4 px-6 text-gray-700">{item.nim}</td>
                           <td className="py-4 px-6 text-gray-700">
-                            {getKelompokName(item.kelompok)}
+                            {/* Selalu tampilkan kelompok sesuai filter */}
+                            {`Kelompok ${kelompokList.find(k => String(k.id) === String(selectedKelompok))?.nomor || 'N/A'}`}
                           </td>
                           <td className="py-4 px-6 text-gray-700">
                             {getTugasTitle(item.tugas)}
                           </td>
                           <td className="py-4 px-6">
-                            {item.link_tugas || item.link ? (
-                              <a
-                                href={item.link_tugas || item.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-green-600 hover:underline cursor-pointer flex items-center gap-1"
-                              >
-                                <Eye className="w-4 h-4" />
-                                View Link
-                              </a>
-                            ) : (
-                              <span className="text-gray-400">No link</span>
-                            )}
+                            {/* Cek apakah submission lewat deadline */}
+                            {(() => {
+                              // Cari deadline tugas dari tugasList
+                              const tugasData = tugasList.find(t => String(t.id) === String(selectedTugas));
+                              const deadline = tugasData?.deadline ? new Date(tugasData.deadline) : null;
+                              const submittedDate = item.createAt ? new Date(item.createAt) : null;
+                              if (deadline && submittedDate && submittedDate > deadline) {
+                                // Sudah lewat deadline
+                                return (
+                                  <span className="text-red-500 font-semibold">Terlambat</span>
+                                );
+                              } else if (item.link_tugas || item.link) {
+                                // Belum lewat deadline, tampilkan tombol lihat
+                                return (
+                                  <a
+                                    href={item.link_tugas || item.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-green-600 hover:underline cursor-pointer flex items-center gap-1"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                    View Link
+                                  </a>
+                                );
+                              } else {
+                                return <span className="text-gray-400">No link</span>;
+                              }
+                            })()}
                           </td>
                           <td className="py-4 px-6 text-gray-700">
                             {formatDate(item.createAt || item.submitted)}

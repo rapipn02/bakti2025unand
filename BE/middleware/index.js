@@ -5,7 +5,8 @@ const prisma = require("../prisma");
 module.exports = {
     isEmail: async (req, res, next) => {
         try {
-            const { email } = req.body;
+            // Ambil email dari body ATAU query
+            const email = req.body.email || req.query.email;
             const user = {
                 email,
             }

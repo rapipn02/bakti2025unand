@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../../../component/SidebarAdmin";
 import logoadmin from "../../../assets/admin/admin.svg";
 import { Menu, ArrowLeft } from "lucide-react";
-import { toast } from "react-hot-toast";
-import { addTugas } from "../../../utils/tugasApi";
+import { Toaster, toast } from "react-hot-toast";import { addTugas } from "../../../utils/tugasApi";
 
 export const AddTugas = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -12,7 +11,8 @@ export const AddTugas = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    deadline: ''
+    deadline: '', // date
+    deadlineTime: '' // time
   });
   const navigate = useNavigate();
 
@@ -26,18 +26,23 @@ export const AddTugas = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!formData.title || !formData.deadline) {
       toast.error('Judul dan deadline harus diisi');
       return;
     }
-
+    // Gabungkan date dan time
+    let deadlineISO = formData.deadline;
+    if (formData.deadlineTime) {
+      deadlineISO = formData.deadline + 'T' + formData.deadlineTime + ':00.000Z';
+    } else {
+      deadlineISO = formData.deadline + 'T00:00:00.000Z';
+    }
     try {
       setLoading(true);
       const result = await addTugas({
         title: formData.title,
         description: formData.description,
-        deadline: formData.deadline
+        deadline: deadlineISO
       });
 
       if (result.success) {
@@ -46,7 +51,8 @@ export const AddTugas = () => {
         setFormData({
           title: '',
           description: '',
-          deadline: ''
+          deadline: '',
+          deadlineTime: ''
         });
         // Navigate back to tugas list after short delay
         setTimeout(() => {
@@ -172,7 +178,7 @@ export const AddTugas = () => {
                     htmlFor="deadline"
                     className="block text-gray-700 text-sm font-medium mb-2"
                   >
-                    Deadline
+                    Deadline (Tanggal)
                   </label>
                   <input
                     type="date"
@@ -182,6 +188,22 @@ export const AddTugas = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     required
+                  />
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="deadlineTime"
+                    className="block text-gray-700 text-sm font-medium mb-2"
+                  >
+                    Deadline (Jam, opsional)
+                  </label>
+                  <input
+                    type="time"
+                    id="deadlineTime"
+                    name="deadlineTime"
+                    value={formData.deadlineTime}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
 
