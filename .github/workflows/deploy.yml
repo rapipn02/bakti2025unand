@@ -1,0 +1,95 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+  SERVICE_BE: ${{ secrets.CLOUD_RUN_SERVICE_BE }}
+  SERVICE_FE: ${{ secrets.CLOUD_RUN_SERVICE_FE }}
+
+jobs:
+  build-and-deploy-be:
+    name: Build & Deploy BE
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+      JWT_TOKEN_KEY: ${{ secrets.JWT_TOKEN_KEY }}
+      JWT_REFRESH_TOKEN_KEY: ${{ secrets.JWT_REFRESH_TOKEN_KEY }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Create .env file for BE
+        run: |
+          cat <<EOF > ./BE/.env
+          DATABASE_URL=${DATABASE_URL}
+          APP_PORT=${APP_PORT}
+          JWT_TOKEN_KEY=${JWT_TOKEN_KEY}
+          JWT_REFRESH_TOKEN_KEY=${JWT_REFRESH_TOKEN_KEY}
+          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+          EOF
+
+      - name: Build and push Docker image (BE)
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_BE }}:latest ./BE
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_BE }}:latest
+
+      - name: Deploy to Cloud Run (BE)
+        run: |
+          gcloud run deploy ${{ env.SERVICE_BE }} \
+            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_BE }}:latest \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated
+
+  build-and-deploy-fe:
+    name: Build & Deploy FE
+    runs-on: ubuntu-latest
+    env:
+      VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Create .env file for FE
+        run: |
+          cat <<EOF > ./FE/.env
+          VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+          VITE_API_BASE_URL=${VITE_API_BASE_URL}
+          EOF
+
+      - name: Build and push Docker image (FE)
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_FE }}:latest ./FE
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_FE }}:latest
+
+      - name: Deploy to Cloud Run (FE)
+        run: |
+          gcloud run deploy ${{ env.SERVICE_FE }} \
+            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_FE }}:latest \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated
