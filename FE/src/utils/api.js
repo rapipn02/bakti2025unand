@@ -8,7 +8,7 @@ const getToken = () => localStorage.getItem('authToken');
 
 // Buat axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: 'https://api-service-930832027948.asia-southeast2.run.app',
   headers: {
     'Content-Type': 'application/json',
   },
