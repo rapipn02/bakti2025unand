@@ -179,8 +179,5 @@ export const App = () => {
     </AuthProvider>
   );
 };
-//halo
-//AA
-//aa
-//assa
+
 export default App;
