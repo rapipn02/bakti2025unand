@@ -64,6 +64,15 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
+
+      # --- TAMBAHKAN KEMBALI LANGKAH INI ---
+      - name: Create .env file for FE
+        run: |
+          cat <<EOF > ./FE/.env
+          VITE_GOOGLE_CLIENT_ID=${{ env.VITE_GOOGLE_CLIENT_ID }}
+          VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }}
+          EOF
+
       - name: Build and push Docker image (FE)
         run: |
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
