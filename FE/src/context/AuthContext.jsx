@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Membuat context
 const AuthContext = createContext();
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'localhost:4000'
+const API_BASE_URL = "https://api-service-930832027948.asia-southeast2.run.app"
 // Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
+        },  
         body: JSON.stringify(credentials),
       });
 
