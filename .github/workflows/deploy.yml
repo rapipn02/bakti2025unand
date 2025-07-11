@@ -12,37 +12,9 @@ env:
   SERVICE_FE: ${{ secrets.CLOUD_RUN_SERVICE_FE }}
 
 jobs:
-  # Job 1: Check which files have changed
-  check-changes:
-    name: Check for file changes
-    runs-on: ubuntu-latest
-    outputs:
-      backend_changed: ${{ steps.changed-files.outputs.backend_changed }}
-      frontend_changed: ${{ steps.changed-files.outputs.frontend_changed }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetches all history for accurate change detection
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v44
-        with:
-          files_yaml: |
-            backend:
-              - 'BE/**'
-            frontend:
-              - 'FE/**'
-
-  # Job 2: Build and deploy Backend only if its files changed
   build-and-deploy-be:
     name: Build & Deploy BE
     runs-on: ubuntu-latest
-    needs: check-changes
-    if: needs.check-changes.outputs.backend_changed == 'true'
-    outputs:
-      url: ${{ steps.get_url_be.outputs.url }}
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_TOKEN_KEY: ${{ secrets.JWT_TOKEN_KEY }}
@@ -74,20 +46,13 @@ jobs:
             --allow-unauthenticated \
             --timeout=600s \
             --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_TOKEN_KEY=${{ secrets.JWT_TOKEN_KEY }},JWT_REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_TOKEN_KEY }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
-      - name: Get Cloud Run URL for BE
-        id: get_url_be
-        run: |
-          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_BE }} --platform managed --region ${{ env.REGION }} --format 'value(status.url)')
-          echo "url=${SERVICE_URL}" >> $GITHUB_OUTPUT
 
-  # Job 3: Build and deploy Frontend only if its files changed
   build-and-deploy-fe:
     name: Build & Deploy FE
     runs-on: ubuntu-latest
-    needs: [check-changes, build-and-deploy-be]
-    if: always() && needs.check-changes.outputs.frontend_changed == 'true'
     env:
       VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }} # Using secret again
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -99,21 +64,10 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
-      - name: Determine Backend URL
-        id: get_be_url
-        run: |
-          if [[ "${{ needs.build-and-deploy-be.outputs.url }}" != "" ]]; then
-            echo "BE was redeployed. Using new URL from BE job."
-            echo "url=${{ needs.build-and-deploy-be.outputs.url }}" >> $GITHUB_OUTPUT
-          else
-            echo "BE was not redeployed. Fetching existing URL."
-            SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_BE }} --platform managed --region ${{ env.REGION }} --format 'value(status.url)')
-            echo "url=${SERVICE_URL}" >> $GITHUB_OUTPUT
-          fi
       - name: Build and push Docker image (FE)
         run: |
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
-          docker build --build-arg VITE_API_BASE_URL=${{ steps.get_be_url.outputs.url }} -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_FE }}:latest ./FE
+          docker build --build-arg VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }} -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_FE }}:latest ./FE
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/bakti-repo/${{ env.SERVICE_FE }}:latest
       - name: Deploy to Cloud Run (FE)
         run: |
@@ -123,5 +77,5 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --timeout=600s \
-            --port=80 \ # <-- TAMBAHKAN BARIS INI
-            --set-env-vars "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }},VITE_API_BASE_URL=${{ steps.get_be_url.outputs.url }}"
+            --port=80 \
+            --set-env-vars "VITE_GOOGLE_CLIENT_ID=${{ env.VITE_GOOGLE_CLIENT_ID }},VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }}"
