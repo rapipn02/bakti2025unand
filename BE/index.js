@@ -15,7 +15,7 @@ const corsConfig = {
 //halo
 app.options("", cors(corsConfig))
 //halo
-//AA
+
 
 app.use(cors(corsConfig))
 
