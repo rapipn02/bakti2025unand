@@ -54,16 +54,14 @@ export const App = () => {
                 secondary: '#fff',
               },
             },
+            // Prevent duplicate toasts
+            id: 'unique-toast',
           }}
           containerStyle={{
             top: 20,
           }}
           gutter={8}
           reverseOrder={false}
-          toastOptions={{
-            // Prevent duplicate toasts
-            id: 'unique-toast',
-          }}
         />
         <Routes>
           {/* ===== USER ===== */}
