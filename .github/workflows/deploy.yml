@@ -18,7 +18,7 @@ jobs:
     # Environment variables for this job
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      APP_PORT: ${{ secrets.APP_PORT }}
+      PORT: ${{ secrets.PORT }}
       JWT_TOKEN_KEY: ${{ secrets.JWT_TOKEN_KEY }}
       JWT_REFRESH_TOKEN_KEY: ${{ secrets.JWT_REFRESH_TOKEN_KEY }}
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -42,7 +42,7 @@ jobs:
         run: |
           cat <<EOF > ./BE/.env
           DATABASE_URL=${DATABASE_URL}
-          APP_PORT=${APP_PORT}
+          PORT=${PORT}
           JWT_TOKEN_KEY=${JWT_TOKEN_KEY}
           JWT_REFRESH_TOKEN_KEY=${JWT_REFRESH_TOKEN_KEY}
           GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
@@ -64,7 +64,7 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --timeout=600s \
-            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},APP_PORT=${{ secrets.APP_PORT }},JWT_TOKEN_KEY=${{ secrets.JWT_TOKEN_KEY }},JWT_REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_TOKEN_KEY }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},PORT=${{ secrets.PORT }},JWT_TOKEN_KEY=${{ secrets.JWT_TOKEN_KEY }},JWT_REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_TOKEN_KEY }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
 
   build-and-deploy-fe:
     name: Build & Deploy FE
