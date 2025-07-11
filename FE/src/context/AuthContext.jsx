@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Membuat context
 const AuthContext = createContext();
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'localhost:4000'
 // Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       // Login dengan API backend yang benar - gunakan prefix /auth
-      const response = await fetch('http://localhost:4000/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
