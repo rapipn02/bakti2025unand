@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         ...userData,
         confirmPassword: userData.confirmPassword || userData.password
       };
-      const response = await fetch(`${API_BASE_URL}/auth/`, {
+      const response = await fetch('https://api-service-930832027948.asia-southeast2.run.app/auth/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   // Fungsi untuk Google Login
   const googleLogin = async (userData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/google-login`, {
+      const response = await fetch('https://api-service-930832027948.asia-southeast2.run.app/auth/google-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
