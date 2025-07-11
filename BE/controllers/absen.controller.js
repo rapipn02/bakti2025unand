@@ -9,7 +9,7 @@ exports.GetAbsen = async (req, res) => {
     // ... (kode Anda yang sudah ada)
     try {
 
-        const data = await prisma.absen.findMany({
+        const data = await prisma.Absen.findMany({
             orderBy: {
                 tanggal: "asc"
             },
@@ -77,7 +77,7 @@ exports.AddAbsen = async (req, res) => {
             })
         }
 
-        const data = await prisma.absen.create({
+        const data = await prisma.Absen.create({
             data: {
                 title,
                 tanggal: new Date(tanggal) // Pastikan tanggal adalah objek Date
@@ -107,7 +107,7 @@ exports.DeleteAbsen = async (req, res) => {
             return res.status(400).json({ status: 400, message: "ID List Absen diperlukan" });
         }
 
-        const data = await prisma.absen.delete({
+        const data = await prisma.Absen.delete({
             where: {
                 id
             }
@@ -153,7 +153,7 @@ exports.EditAbsen = async (req, res) => {
         if (tanggal) updateData.tanggal = new Date(tanggal);
 
 
-        const data = await prisma.absen.update({
+        const data = await prisma.Absen.update({
             where: { id },
             data: updateData
         })
@@ -200,7 +200,7 @@ exports.AddAbsensi = async (req, res) => {
         }
 
 
-        const check = await prisma.absensi.findFirst({
+        const check = await prisma.Absensi.findFirst({
             where: {
                 id_absen,
                 id_anggota_kelompok
@@ -212,7 +212,7 @@ exports.AddAbsensi = async (req, res) => {
                 message: "Mahasiswa sudah melakukan absensi untuk sesi ini."
             })
         }
-        const data = await prisma.absensi.create({
+        const data = await prisma.Absensi.create({
             data: {
                 id_absen,
                 id_anggota_kelompok,
@@ -253,7 +253,7 @@ exports.EditAbsensiToNull = async (req, res) => { // Nama fungsi ini mungkin leb
         // const { id, id_absen } = req.body;
         // where: { id_id_absen: { id, id_absen } } // jika Anda punya composite key di schema.prisma
 
-        const data = await prisma.absensi.delete({
+        const data = await prisma.Absensi.delete({
             where: { id } // Asumsi 'id' adalah primary key unik di tabel Absensi
         })
         
@@ -292,7 +292,7 @@ exports.AdminScanParticipantQR = async (req, res) => {
             });
         }
 
-        const absenSession = await prisma.absen.findUnique({
+        const absenSession = await prisma.Absen.findUnique({
             where: { id: absenId }
         });
         if (!absenSession) {
@@ -339,7 +339,7 @@ exports.AdminScanParticipantQR = async (req, res) => {
             });
         }
 
-        const existingAbsensi = await prisma.absensi.findFirst({
+        const existingAbsensi = await prisma.Absensi.findFirst({
             where: {
                 id_absen: absenId,
                 id_anggota_kelompok: anggotaKelompok.id,
@@ -363,7 +363,7 @@ exports.AdminScanParticipantQR = async (req, res) => {
 
         let absensiRecord;
         if (existingAbsensi) { // Jika ada record sebelumnya (misal Alfa, Izin, Sakit), update menjadi Hadir
-            absensiRecord = await prisma.absensi.update({
+            absensiRecord = await prisma.Absensi.update({
                 where: { id: existingAbsensi.id },
                 data: dataUntukAbsensi, // createAt tidak diubah, updateAt akan otomatis
             });
@@ -373,7 +373,7 @@ exports.AdminScanParticipantQR = async (req, res) => {
                 data: absensiRecord,
             });
         } else { // Jika belum ada record sama sekali, buat baru
-            absensiRecord = await prisma.absensi.create({
+            absensiRecord = await prisma.Absensi.create({
                 data: {
                     id_absen: absenId,
                     id_anggota_kelompok: anggotaKelompok.id,
@@ -410,7 +410,7 @@ exports.ScanQRAbsensi = async (req, res) => {
         }
 
         // Cari sesi absen
-        const absenSession = await prisma.absen.findUnique({
+        const absenSession = await prisma.Absen.findUnique({
             where: { id: id_absen }
         });
 
@@ -445,7 +445,7 @@ exports.ScanQRAbsensi = async (req, res) => {
         }
 
         // Cek apakah sudah absen
-        const existingAbsensi = await prisma.absensi.findFirst({
+        const existingAbsensi = await prisma.Absensi.findFirst({
             where: {
                 id_absen: id_absen,
                 id_anggota_kelompok: mahasiswa.id
@@ -461,7 +461,7 @@ exports.ScanQRAbsensi = async (req, res) => {
                 });
             } else {
                 // Update status menjadi Hadir
-                const updatedAbsensi = await prisma.absensi.update({
+                const updatedAbsensi = await prisma.Absensi.update({
                     where: { id: existingAbsensi.id },
                     data: {
                         keterangan: "Hadir",
@@ -478,7 +478,7 @@ exports.ScanQRAbsensi = async (req, res) => {
             }
         } else {
             // Buat record absensi baru
-            const newAbsensi = await prisma.absensi.create({
+            const newAbsensi = await prisma.Absensi.create({
                 data: {
                     id_absen: id_absen,
                     id_anggota_kelompok: mahasiswa.id,
@@ -528,7 +528,7 @@ exports.UpdateStatusKehadiran = async (req, res) => {
         }
 
         // Cek apakah record absensi sudah ada
-        const existingAbsensi = await prisma.absensi.findFirst({
+        const existingAbsensi = await prisma.Absensi.findFirst({
             where: {
                 id_anggota_kelompok: anggota_id,
                 id_absen: absen_id
@@ -538,7 +538,7 @@ exports.UpdateStatusKehadiran = async (req, res) => {
         let result;
         if (existingAbsensi) {
             // Update existing record
-            result = await prisma.absensi.update({
+            result = await prisma.Absensi.update({
                 where: {
                     id: existingAbsensi.id
                 },
@@ -550,7 +550,7 @@ exports.UpdateStatusKehadiran = async (req, res) => {
             });
         } else {
             // Create new record
-            result = await prisma.absensi.create({
+            result = await prisma.Absensi.create({
                 data: {
                     id_anggota_kelompok: anggota_id,
                     id_absen: absen_id,
