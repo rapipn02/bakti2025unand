@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 exports.Register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const user = await prisma.user.create({
+    const user = await prisma.User.create({
       data: {
         name,
         email,
@@ -61,7 +61,7 @@ exports.Login = async (req, res) => {
       });
     }
 
-    const user = await prisma.user.findFirst({
+    const user = await prisma.User.findFirst({
       where: {
         email,
       },
@@ -103,7 +103,7 @@ exports.Login = async (req, res) => {
 exports.LoginWithGoogle = async (req, res) => {
   try {
     const { name, email, password, image } = req.body;
-    let user = await prisma.user.findFirst({ where: { email } });
+    let user = await prisma.User.findFirst({ where: { email } });
 
     if (user) {
       // Jangan cek password, langsung login
@@ -116,7 +116,7 @@ exports.LoginWithGoogle = async (req, res) => {
       });
     } else {
       // Buat user baru
-      const newUser = await prisma.user.create({
+      const newUser = await prisma.User.create({
         data: {
           name,
           email,
@@ -144,7 +144,7 @@ exports.LoginWithGoogle = async (req, res) => {
 
 exports.GetUser = async (req, res) => {
   try {
-    const user = await prisma.user.findMany();
+    const user = await prisma.User.findMany();
     return res.status(200).json({
       status: 200,
       data: user,
@@ -161,7 +161,7 @@ exports.GetUser = async (req, res) => {
 
 exports.GenerateCode = async (req, res) => {
   try {
-    const check = await prisma.user.findFirst({
+    const check = await prisma.User.findFirst({
       where: {
         email: req.query.email,
       },
@@ -239,7 +239,7 @@ exports.CheckCode = async (req, res) => {
 
     if (code.code == req.body.code) {
       try {
-        await prisma.user.update({
+        await prisma.User.update({
           where: {
             email: req.body.email,
           },
@@ -312,9 +312,9 @@ exports.googleAuthCallback = async (req, res) => {
     });
     const payload = ticket.getPayload();
     // Find or create user
-    let user = await prisma.user.findFirst({ where: { email: payload.email } });
+    let user = await prisma.User.findFirst({ where: { email: payload.email } });
     if (!user) {
-      user = await prisma.user.create({
+      user = await prisma.User.create({
         data: {
           name: payload.name,
           email: payload.email,
