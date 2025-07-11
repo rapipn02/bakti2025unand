@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       // Login dengan API backend yang benar - gunakan prefix /auth
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch('https://api-service-930832027948.asia-southeast2.run.app/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
