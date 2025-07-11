@@ -186,11 +186,11 @@ export const Gallery = () => {
       ))}
 
       {/* Title di atas foto inti */}
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-3">
         <img
           src={Title}
           alt="BAKTI UNAND 2025 PRESENT"
-          style={{ maxWidth: 400, width: "100%" }}
+          style={{ maxWidth: 600, width: "100%" }}
         />
       </div>
 

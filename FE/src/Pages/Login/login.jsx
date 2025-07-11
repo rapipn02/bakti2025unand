@@ -31,7 +31,7 @@ export const Login = () => {
     const result = await login({ email, password });
     
     if (result.success) {
-      toast.success("Login berhasil!");
+      toast.success(`Selamat Datang ${result.user?.name || ""}`);
       // Role-based redirect
       const userRole = result.user?.role;
       

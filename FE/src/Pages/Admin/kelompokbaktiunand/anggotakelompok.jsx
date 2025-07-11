@@ -249,6 +249,11 @@ export const AnggotaKelompok = () => {
     }
   };
 
+  // Hapus dummy data: generateDummyData dan fallback ke dummy
+  // Helper function to generate dummy data (dihapus)
+  // Semua fallback ke dummyData dihapus, hanya gunakan API/backend atau localStorage jika offline
+  // Jika gagal, tampilkan error dan setAnggotaData([])
+
   const loadAnggotaData = async () => {
     if (!selectedKelompok) {
       console.log('No kelompok selected, skipping load');
@@ -257,67 +262,12 @@ export const AnggotaKelompok = () => {
 
     console.log('Loading anggota data for kelompok:', selectedKelompok);
     setLoading(true);
-    
-    // Helper function to generate dummy data
-    const generateDummyData = () => {
-      try {
-        if (!selectedKelompok) return [];
-        
-        const selectedKelompokData = kelompokList.find(k => k.id === selectedKelompok);
-        const kelompokDisplay = selectedKelompokData?.nomor ? 
-          `${selectedKelompokData.nomor}` : 
-          (selectedKelompokData?.nama ? String(selectedKelompokData.nama) : 'Unknown');
-        
-        // Different dummy data for each kelompok
-        const allDummyData = {
-          '1': [ // Kelompok 1
-            { id: '1', nama: 'Ahmad Rizki', nim: '221151001', kelompok: kelompokDisplay },
-            { id: '2', nama: 'Siti Nurhaliza', nim: '221151002', kelompok: kelompokDisplay },
-            { id: '3', nama: 'Budi Santoso', nim: '221151003', kelompok: kelompokDisplay },
-          ],
-          '2': [ // Kelompok 2
-            { id: '4', nama: 'fadhlilah aisyah putri', nim: '221151004', kelompok: kelompokDisplay },
-            { id: '5', nama: 'Dewi Sartika', nim: '221151005', kelompok: kelompokDisplay },
-            { id: '6', nama: 'Rahman Hakim', nim: '221151006', kelompok: kelompokDisplay },
-          ],
-          '3': [ // Kelompok 3
-            { id: '7', nama: 'abdill', nim: '231112002', kelompok: kelompokDisplay },
-            { id: '8', nama: 'dapa naidi', nim: '231512007', kelompok: kelompokDisplay },
-            { id: '9', nama: 'Lestari Wulan', nim: '231512009', kelompok: kelompokDisplay },
-          ],
-          '4': [ // Kelompok 4
-            { id: '10', nama: 'NOPAL', nim: '231512025', kelompok: kelompokDisplay },
-            { id: '11', nama: 'rapip', nim: '231512028', kelompok: kelompokDisplay },
-            { id: '12', nama: 'Indira Sari', nim: '231512030', kelompok: kelompokDisplay },
-          ]
-        };
-        
-        // Get dummy data for specific kelompok based on nomor
-        const kelompokNomor = selectedKelompokData?.nomor;
-        if (kelompokNomor && allDummyData[kelompokNomor.toString()]) {
-          return allDummyData[kelompokNomor.toString()];
-        }
-        
-        // Default fallback for unknown kelompok
-        return [
-          { id: '999', nama: 'Dummy User', nim: '999999999', kelompok: kelompokDisplay }
-        ];
-      } catch (error) {
-        console.error('Error generating dummy data:', error);
-        return [];
-      }
-    };
-    
     try {
       const result = await getAnggotaKelompokById(selectedKelompok);
-      console.log('API result:', result);
-      
-      if (result.success && result.data) {
-        // Sanitize data to ensure all fields are strings
+      if (result.success && Array.isArray(result.data)) {
+        // Sanitize data
         const selectedKelompokData = kelompokList.find(k => k.id === selectedKelompok);
-        const kelompokDisplay = selectedKelompokData?.nomor ? 
-          String(selectedKelompokData.nomor) : 'Unknown';
-          
+        const kelompokDisplay = selectedKelompokData?.nomor ? String(selectedKelompokData.nomor) : 'Unknown';
         const sanitizedData = result.data.map(anggota => ({
           id: String(anggota.id || ''),
           nama: String(anggota.nama || ''),
@@ -325,19 +275,14 @@ export const AnggotaKelompok = () => {
           kelompok: kelompokDisplay
         }));
         setAnggotaData(sanitizedData);
-        console.log('Successfully loaded data from API');
       } else {
-        // Fallback: cek localStorage dulu, baru dummy data
-        console.warn('API failed, checking localStorage:', result.error);
+        // Fallback: cek localStorage
         const storedAnggota = localStorage.getItem(`anggotaKelompok_${selectedKelompok}`);
         if (storedAnggota) {
           try {
             const data = JSON.parse(storedAnggota);
             const selectedKelompokData = kelompokList.find(k => k.id === selectedKelompok);
-            const kelompokDisplay = selectedKelompokData?.nomor ? 
-              String(selectedKelompokData.nomor) : 'Unknown';
-              
-            // Sanitize localStorage data
+            const kelompokDisplay = selectedKelompokData?.nomor ? String(selectedKelompokData.nomor) : 'Unknown';
             const sanitizedData = data.map(anggota => ({
               id: String(anggota.id || ''),
               nama: String(anggota.nama || ''),
@@ -345,42 +290,26 @@ export const AnggotaKelompok = () => {
               kelompok: kelompokDisplay
             }));
             setAnggotaData(sanitizedData);
-            console.log('Loaded data from localStorage');
-            // Only show toast once per session
-            if (!sessionStorage.getItem('anggota-offline-notified')) {
-              toast.error('Menggunakan data offline. API tidak tersedia.');
-              sessionStorage.setItem('anggota-offline-notified', 'true');
-            }
+            toast.error('API tidak tersedia, menggunakan data offline.');
           } catch (parseError) {
             console.error('Error parsing localStorage data:', parseError);
-            const dummyData = generateDummyData();
-            setAnggotaData(dummyData);
-            toast.error('Data offline rusak, menggunakan data demo.');
+            setAnggotaData([]);
+            toast.error('Data offline rusak, tidak dapat memuat anggota.');
           }
         } else {
-          const dummyData = generateDummyData();
-          setAnggotaData(dummyData);
-          console.log('No localStorage data, using dummy data');
-          // Only show toast once per session
-          if (!sessionStorage.getItem('anggota-demo-notified')) {
-            toast.error('Menggunakan data demo. API tidak tersedia.');
-            sessionStorage.setItem('anggota-demo-notified', 'true');
-          }
+          setAnggotaData([]);
+          toast.error('Gagal memuat data anggota kelompok.');
         }
       }
     } catch (error) {
       console.error('Error loading anggota data:', error);
-      
-      // Fallback: cek localStorage dulu, baru dummy data
+      // Fallback: cek localStorage
       const storedAnggota = localStorage.getItem(`anggotaKelompok_${selectedKelompok}`);
       if (storedAnggota) {
         try {
           const data = JSON.parse(storedAnggota);
           const selectedKelompokData = kelompokList.find(k => k.id === selectedKelompok);
-          const kelompokDisplay = selectedKelompokData?.nomor ? 
-            String(selectedKelompokData.nomor) : 'Unknown';
-            
-          // Sanitize fallback data
+          const kelompokDisplay = selectedKelompokData?.nomor ? String(selectedKelompokData.nomor) : 'Unknown';
           const sanitizedData = data.map(anggota => ({
             id: String(anggota.id || ''),
             nama: String(anggota.nama || ''),
@@ -388,31 +317,18 @@ export const AnggotaKelompok = () => {
             kelompok: kelompokDisplay
           }));
           setAnggotaData(sanitizedData);
-          console.log('Fallback: loaded data from localStorage');
-          // Only show toast once per session
-          if (!sessionStorage.getItem('anggota-offline-notified')) {
-            toast.error('API tidak tersedia, menggunakan data offline.');
-            sessionStorage.setItem('anggota-offline-notified', 'true');
-          }
+          toast.error('API tidak tersedia, menggunakan data offline.');
         } catch (parseError) {
           console.error('Fallback: Error parsing localStorage data:', parseError);
-          const dummyData = generateDummyData();
-          setAnggotaData(dummyData);
-          toast.error('API dan data offline tidak tersedia, menggunakan data demo.');
+          setAnggotaData([]);
+          toast.error('API dan data offline tidak tersedia, tidak dapat memuat anggota.');
         }
       } else {
-        const dummyData = generateDummyData();
-        setAnggotaData(dummyData);
-        console.log('Fallback: no localStorage data, using dummy data');
-        // Only show toast once per session
-        if (!sessionStorage.getItem('anggota-demo-notified')) {
-          toast.error('API tidak tersedia, menggunakan data demo.');
-          sessionStorage.setItem('anggota-demo-notified', 'true');
-        }
+        setAnggotaData([]);
+        toast.error('API tidak tersedia, tidak dapat memuat anggota.');
       }
     } finally {
       setLoading(false);
-      console.log('Finished loading anggota data');
     }
   };
 

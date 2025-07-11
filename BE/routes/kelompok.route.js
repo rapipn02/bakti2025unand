@@ -3,7 +3,7 @@ const kelompokController = require("../controllers/kelompok.controller")
 const middleware = require("../middleware")
 
 // Admin routes - CRUD Kelompok
-router.get("/", middleware.authentication, middleware.isAdmin, kelompokController.GetKelompok)
+router.get("/", middleware.authentication, kelompokController.GetKelompok)
 router.post("/", middleware.authentication, middleware.isAdmin, kelompokController.AddKelompok)
 router.delete("/", middleware.authentication, middleware.isAdmin, kelompokController.DeleteKelompok)
 

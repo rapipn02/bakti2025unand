@@ -15,8 +15,8 @@ exports.AddKelompok = async (req, res) => {
         })
 
         if (check) {
-            return res.status(401).json({
-                status: 401,
+            return res.status(400).json({
+                status: 400,
                 message: `Kelompok ${nomor} sudah ada`,
             })
         }

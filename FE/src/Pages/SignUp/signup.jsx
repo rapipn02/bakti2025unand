@@ -30,7 +30,7 @@ export const Signup = () => {
     }
     const result = await register({ name, email, password, confirmPassword });
     if (result.success) {
-      toast.success("Registrasi berhasil! Silakan login.");
+      toast.success(`Registrasi berhasil! Silakan login, ${name}`);
       navigate("/login");
     } else {
       toast.error(result.error || "Registrasi gagal!");

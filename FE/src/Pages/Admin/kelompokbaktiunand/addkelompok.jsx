@@ -34,12 +34,16 @@ export const AddKelompok = () => {
       
       if (result.success) {
         toast.success(result.message || "Kelompok berhasil ditambahkan!");
-        
-        // Pindah ke halaman kelompok setelah berhasil
         setTimeout(() => {
           navigate("/kelompok");
         }, 1500);
       } else {
+        // Jika error validasi (kelompok sudah ada), tampilkan toast error
+        if (result.error && result.error.includes("sudah ada")) {
+          toast.error(result.error);
+          setLoading(false);
+          return;
+        }
         // Jika API gagal, gunakan localStorage sebagai fallback
         console.warn('API add failed, using localStorage:', result.error);
         

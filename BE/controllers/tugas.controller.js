@@ -459,7 +459,7 @@ exports.KumpulTugas = async (req, res) => {
         }
 
         // Ambil data tugas untuk cek deadline
-        const tugas = await prisma.tugas.findUnique({ where: { id_tugas } });
+        const tugas = await prisma.tugas.findUnique({ where: { id: id_tugas } });
         if (!tugas) {
             return res.status(404).json({
                 status: 404,
@@ -508,42 +508,34 @@ exports.KumpulTugas = async (req, res) => {
 };
 exports.EditKumpulTugas = async (req, res) => {
     try {
-        const { id, nama, nim, kelompok, link_tugas } = req.body
+        const { id, nama, nim, kelompok, link_tugas } = req.body;
 
-        console.log({ id, nama, nim, kelompok, link_tugas })
+        // Ambil data tugas untuk cek deadline
+        const kumpulTugas = await prisma.kumpul_Tugas.findUnique({ where: { id } });
+        if (!kumpulTugas) {
+            return res.status(404).json({ status: 404, message: "Pengumpulan tugas tidak ditemukan." });
+        }
+        const tugas = await prisma.tugas.findUnique({ where: { id: kumpulTugas.id_tugas } });
+        if (!tugas) {
+            return res.status(404).json({ status: 404, message: "Tugas tidak ditemukan." });
+        }
+        if (tugas.deadline && new Date() > new Date(tugas.deadline)) {
+            return res.status(400).json({ status: 400, message: "Sudah lewat deadline, tidak bisa edit tugas." });
+        }
 
         const data = await prisma.kumpul_Tugas.update({
-            where: {
-                id
-            },
-            data: {
-                nama,
-                nim,
-                kelompok,
-                link_tugas
-            }
-        })
+            where: { id },
+            data: { nama, nim, kelompok, link_tugas }
+        });
 
         if (data) {
-            return res.status(200).json({
-                status: 200,
-                message: "Berhasil mengedit tugas",
-                data
-            })
+            return res.status(200).json({ status: 200, message: "Berhasil mengedit tugas", data });
         } else {
-            return res.status(400).json({
-                status: 400,
-                message: "Gagal mengedit tugas",
-                data
-            })
+            return res.status(400).json({ status: 400, message: "Gagal mengedit tugas", data });
         }
 
     } catch (error) {
         console.log("Kumpul Tugas Controller Error:", error);
-        return res.status(500).json({
-            status: 500,
-            message: "Internal Server Error",
-            error
-        })
+        return res.status(500).json({ status: 500, message: "Internal Server Error", error });
     }
 }

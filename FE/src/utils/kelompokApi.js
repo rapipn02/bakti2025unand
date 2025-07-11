@@ -46,6 +46,13 @@ export const addKelompok = async (kelompokData) => {
     };
   } catch (error) {
     console.error('Add Kelompok Error:', error);
+    // Tangani error validasi (400) dengan pesan khusus
+    if (error.response && error.response.status === 400) {
+      return {
+        success: false,
+        error: error.response.data.message || 'Kelompok sudah ada'
+      };
+    }
     return {
       success: false,
       error: error.response?.data?.message || 'Failed to add kelompok'
@@ -145,7 +152,7 @@ export const editAnggotaKelompok = async (anggotaData) => {
 export const deleteAnggotaKelompok = async (anggotaId) => {
   try {
     const response = await api.delete('/kelompok/anggota', {
-      data: { id: anggotaId }
+      params: { id: anggotaId }
     });
     return {
       success: true,

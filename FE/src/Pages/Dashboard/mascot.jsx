@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DilloImage from "../../assets/maskot/dillo.png";
+import DilloImage from "../../assets/maskot/dillonew.png";
 import Ronand from "../../assets/maskot/ronand.svg";
 import MendungImg1 from "../../assets/maskot/mendung.svg";
 import MendungImg2 from "../../assets/maskot/mendung2.svg";
@@ -18,13 +18,41 @@ const useMediaQuery = (query) => {
   return matches;
 };
 
+// Tombol panah untuk desktop
+const SliderArrowDesktop = ({ onClick, left }) => (
+  <button
+    onClick={onClick}
+    className={`absolute top-1/2 -translate-y-1/2 z-30 bg-[#5E311E]/80 text-white rounded-full w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center shadow-lg hover:bg-[#5E311E]/90 hover:scale-105 transition-all cursor-pointer
+      ${left ? "left-[-1rem]" : "right-[-46rem]"}`}
+    aria-label={left ? "Sebelumnya" : "Selanjutnya"}
+  >
+    {left ? "\u276E" : "\u276F"}
+  </button>
+);
+
+// Tombol panah untuk mobile
+const SliderArrowMobile = ({ onClick, left }) => (
+  <button
+    onClick={onClick}
+    className={`absolute top-1/2 -translate-y-1/2 z-30 bg-[#5E311E]/80 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-[#5E311E]/90 hover:scale-105 transition-all
+      ${left ? "left-2" : "right-2"}`}
+    aria-label={left ? "Sebelumnya" : "Selanjutnya"}
+  >
+    {left ? "\u276E" : "\u276F"}
+  </button>
+);
+
 // Komponen Awan
 const Cloud = ({ src, alt, className }) => (
   <img src={src} alt={alt} className={`absolute z-0 ${className}`} />
 );
 
 // Komponen Slider Maskot
-const MascotSlider = ({ containerClassName, onChange }) => {
+const MascotSlider = ({
+  containerClassName,
+  onChange,
+  variant = "desktop",
+}) => {
   const maskots = [
     {
       src: DilloImage,
@@ -62,31 +90,28 @@ const MascotSlider = ({ containerClassName, onChange }) => {
     <div
       className={`relative ${containerClassName} flex flex-col items-center`}
     >
-      <div className="relative w-full flex items-center justify-between">
-        {/* Tombol kiri */}
-        <button
-          onClick={prev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#5E311E]/70 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#5E311E]/90 hover:scale-105 transition-all cursor-pointer"
-        >
-          &#10094;
-        </button>
-        <img
-          key={index}
-          src={maskots[index].src}
-          alt={maskots[index].alt}
-          className="w-full h-auto rounded-2xl transition-opacity duration-500 object-contain"
-          style={{ maxHeight: 600 }}
-        />
-        {/* Tombol kanan */}
-        <button
-          onClick={next}
-          className="absolute -right-[46rem] top-1/2 -translate-y-1/2 bg-[#5E311E]/70 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#5E311E]/90 hover:scale-105 transition-all cursor-pointer"
-        >
-          &#10095;
-        </button>
-      </div>
+      {/* Tombol panah sesuai variant */}
+      {variant === "desktop" ? (
+        <>
+          <SliderArrowDesktop onClick={prev} left />
+          <SliderArrowDesktop onClick={next} />
+        </>
+      ) : (
+        <>
+          <SliderArrowMobile onClick={prev} left />
+          <SliderArrowMobile onClick={next} />
+        </>
+      )}
+      {/* Maskot */}
+      <img
+        key={index}
+        src={maskots[index].src}
+        alt={maskots[index].alt}
+        className="w-full h-auto rounded-2xl transition-opacity duration-500 object-contain"
+        style={{ maxHeight: 600 }}
+      />
       {/* Indikator bulat */}
-      <div className="flex mt-3 space-x-2">
+      <div className="flex mt-0 space-x-2 z-10">
         {maskots.map((_, i) => (
           <span
             key={i}
@@ -151,6 +176,7 @@ const DesktopView = () => {
         <MascotSlider
           containerClassName="absolute bottom-[-4rem] -left-[2.5rem] w-full max-w-[650px] z-10"
           onChange={setMaskot}
+          variant="desktop"
         />
         <DescriptionBox
           containerClassName="bg-[#FFF6EB] shadow-[10px_10px_0px_0px_#5E311E] rounded-xl border border-[#5E311E] absolute top-[13.5rem] left-[30.5rem] z-0 transform -translate-x-16"
@@ -190,6 +216,7 @@ const MobileView = () => {
         <MascotSlider
           containerClassName="w-full max-w-xs mt-[2rem]"
           onChange={setMaskot}
+          variant="mobile"
         />
         <DescriptionBox
           containerClassName="bg-[#FFF6EB] shadow-[10px_10px_0px_0px_#5E311E] rounded-xl border border-[#5E311E] w-full top-0"

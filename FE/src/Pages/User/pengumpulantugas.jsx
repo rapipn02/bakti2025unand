@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "../../component/Navbar";
-import MotifBawah from "../../assets/timeline/motifbesar.png";
 import ikonfile from "../../assets/kumpultugas/kumpultugas.svg";
 import { Toaster, toast } from "react-hot-toast";
-import { getTugasList, submitTugas } from "../../utils/tugasApi";
+import { getTugasList, submitTugas, editKumpulTugas } from "../../utils/tugasApi";
 import { getKelompokList } from "../../utils/kelompokApi";
 import { jwtDecode } from "jwt-decode";
+
+// Dummy data kelompokList untuk development/testing
+const dummyKelompokList = [
+  { id: 1, nomor: 1 },
+  { id: 2, nomor: 2 },
+  { id: 3, nomor: 3 },
+  { id: 4, nomor: 4 },
+  { id: 5, nomor: 5 },
+  { id: 6, nomor: 6 }
+];
 
 // Helper untuk memformat tanggal deadline
 const formatDeadline = (date) => {
@@ -61,7 +70,25 @@ const SubmissionFormModal = ({ task, onClose, onBack, onTaskSubmit, kelompokList
     kelompok: "",
     link: "",
   });
+  
+  let deadlineWIB = null;
+  if (task.deadlineDate) {
+    deadlineWIB = new Date(task.deadlineDate);
+    deadlineWIB.setHours(deadlineWIB.getHours() + 7);
+  }
+  
   const deadlinePassed = task.deadlineDate && new Date() > new Date(task.deadlineDate);
+
+  useEffect(() => {
+    if (task && task.hasSubmitted) {
+      setFormData({
+        nama: task.Kumpul_Tugas?.[0]?.nama || "",
+        nim: task.Kumpul_Tugas?.[0]?.nim || "",
+        kelompok: task.Kumpul_Tugas?.[0]?.id_kelompok?.toString() || "",
+        link: task.Kumpul_Tugas?.[0]?.link_tugas || "",
+      });
+    }
+  }, [task]);
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -82,7 +109,11 @@ const SubmissionFormModal = ({ task, onClose, onBack, onTaskSubmit, kelompokList
       });
       return;
     }
-    onTaskSubmit(task.id, formData);
+    if (task.editMode && task.Kumpul_Tugas?.[0]?.id) {
+      onTaskSubmit(task.id, formData, true, task.Kumpul_Tugas[0].id);
+    } else {
+      onTaskSubmit(task.id, formData);
+    }
     onClose();
   };
 
@@ -112,7 +143,9 @@ const SubmissionFormModal = ({ task, onClose, onBack, onTaskSubmit, kelompokList
           <input name="link" value={formData.link} onChange={handleChange} placeholder="Link Tugas" className="w-full bg-white border border-[#a1887f] rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#6d4c41]" disabled={deadlinePassed} />
           <div className="flex justify-between items-center pt-4">
             <button type="button" onClick={onBack} className="text-[#6d4c41] font-bold hover cursor-pointer">&larr; Kembali</button>
-            <button type="submit" className="bg-[#6d4c41] text-white px-8 py-3 rounded-lg font-bold text-sm hover:scale-105 transition-all cursor-pointer" disabled={deadlinePassed}>Submit</button>
+            <button type="submit" className="bg-[#6d4c41] text-white px-8 py-3 rounded-lg font-bold text-sm hover:scale-105 transition-all cursor-pointer" disabled={deadlinePassed}>
+              {task.editMode ? "Edit Tugas" : "Submit"}
+            </button>
           </div>
         </form>
       </div>
@@ -127,7 +160,7 @@ export const Pengumpulantugas = () => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [kelompokList, setKelompokList] = useState([]);
+  const [kelompokList, setKelompokList] = useState(dummyKelompokList);
   const [userId, setUserId] = useState(null);
 
   // 1. useEffect untuk mendapatkan userId dari token saat komponen pertama kali dimuat
@@ -139,27 +172,24 @@ export const Pengumpulantugas = () => {
         setUserId(decoded.id);
       } catch (e) {
         console.error("Invalid token:", e);
-        setUserId(null); // Pastikan userId null jika token tidak valid
+        setUserId(null);
       }
     } else {
-        setLoading(false); // Jika tidak ada token, berhenti loading
+        setLoading(false);
     }
   }, []);
 
   // 2. useEffect untuk mengambil data tugas dan kelompok, dijalankan setelah userId didapatkan
   useEffect(() => {
-    // Hanya jalankan jika userId sudah ada
     if (!userId) {
-        // Jika tidak ada user id (misal, belum login), tidak perlu fetch tugas
         if (!localStorage.getItem("authToken")) setLoading(false);
         return;
-    };
+    }
 
     const fetchAllData = async () => {
       setLoading(true);
       setError("");
       
-      // Mengambil data tugas dan kelompok secara bersamaan
       const [tugasResult, kelompokResult] = await Promise.all([
         getTugasList(),
         getKelompokList()
@@ -167,15 +197,16 @@ export const Pengumpulantugas = () => {
 
       if (tugasResult.success) {
         const processedTasks = tugasResult.data.map((t) => {
-          // Cek apakah user saat ini sudah mengumpulkan tugas 't'
-          const hasSubmitted = t.Kumpul_Tugas.some(sub => sub.id_user === userId);
+          const userSubmission = t.Kumpul_Tugas.find(sub => sub.id_user === userId);
+          const hasSubmitted = !!userSubmission;
           return {
             id: t.id,
             title: t.title,
             deadline: t.deadline ? formatDeadline(t.deadline) : "-",
             deadlineDate: t.deadline ? new Date(t.deadline) : null,
             description: t.description || "",
-            hasSubmitted, // Properti baru untuk menandai status pengumpulan
+            hasSubmitted,
+            Kumpul_Tugas: userSubmission ? [userSubmission] : [],
           };
         });
         setTasks(processedTasks);
@@ -183,17 +214,14 @@ export const Pengumpulantugas = () => {
         setError(tugasResult.error || "Gagal memuat tugas");
       }
 
-      if (kelompokResult.success) {
-        setKelompokList(kelompokResult.data);
-      } else {
-        setKelompokList([]); // Atur ke array kosong jika gagal
-      }
+      // Jika ingin fetch dari backend, bisa gunakan useEffect seperti sebelumnya
+      // useEffect(() => { setKelompokList(dummyKelompokList); }, []);
 
       setLoading(false);
     };
 
     fetchAllData();
-  }, [userId]); // Dependensi pada userId
+  }, [userId]);
 
   const handleOpenModal = (task) => {
     setSelectedTask(task);
@@ -203,13 +231,12 @@ export const Pengumpulantugas = () => {
   const handleShowSubmissionForm = () => setShowSubmissionForm(true);
   const handleBackToDescription = () => setShowSubmissionForm(false);
 
-  const handleTaskSubmit = async (taskId, submissionData) => {
-    // Pastikan userId ada sebelum submit
+  const handleTaskSubmit = async (taskId, submissionData, isEdit = false, kumpulId = null) => {
     if (!userId) {
-        toast.error("Sesi Anda telah berakhir, silakan login kembali.", {
-            style: { background: "#6d4c41", color: "#fff" },
-        });
-        return;
+      toast.error("Sesi Anda telah berakhir, silakan login kembali.", {
+        style: { background: "#6d4c41", color: "#fff" },
+      });
+      return;
     }
 
     try {
@@ -221,23 +248,24 @@ export const Pengumpulantugas = () => {
         kelompok: parseInt(submissionData.kelompok),
         link_tugas: submissionData.link,
       };
-      
-      const result = await submitTugas(payload);
-
+      let result;
+      if (isEdit && kumpulId) {
+        result = await editKumpulTugas({ ...payload, id: kumpulId });
+      } else {
+        result = await submitTugas(payload);
+      }
       if (result.success) {
-        toast.success("Tugas berhasil dikumpulkan!", {
+        toast.success(isEdit ? "Tugas berhasil diedit!" : "Tugas berhasil dikumpulkan!", {
           duration: 4000,
           style: { background: "#6d4c41", color: "#fff" },
         });
-        // Perbarui state tasks untuk merefleksikan pengumpulan yang baru
-        setTasks(prevTasks => 
-            prevTasks.map(task => 
-                task.id === taskId ? { ...task, hasSubmitted: true } : task
-            )
+        setTasks(prevTasks =>
+          prevTasks.map(task =>
+            task.id === taskId ? { ...task, hasSubmitted: true } : task
+          )
         );
       } else {
-        // Menampilkan pesan error dari server (misal: "Anda sudah pernah mengumpulkan tugas ini.")
-        toast.error(result.error || "Gagal mengumpulkan tugas.", {
+        toast.error(result.error || (isEdit ? "Gagal mengedit tugas." : "Gagal mengumpulkan tugas."), {
           duration: 4000,
           style: { background: "#6d4c41", color: "#fff" },
         });
@@ -250,6 +278,11 @@ export const Pengumpulantugas = () => {
     }
   };
 
+  const handleEditSubmission = (task) => {
+    setSelectedTask({ ...task, editMode: true });
+    setShowSubmissionForm(true);
+  };
+
   const isLate = (task) => {
     if (!task.deadlineDate) return false;
     return new Date() > new Date(task.deadlineDate);
@@ -260,15 +293,17 @@ export const Pengumpulantugas = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <Navbar />
       <div className="bg-[#fcf8f0] min-h-screen font-sans flex justify-center items-center p-4">
-        <main className="relative bg-[#f9f4e8] w-full max-w-7xl p-4 md:p-10 md:pt-32 pt-4 rounded-2xl shadow-lg border-2 border-[#623B1C] mt-15 md:mt-0">
-          <div className="hidden md:block absolute -top-16 left-1/2 -translate-x-1/2 z-20 text-center w-full px-4">
-            <div className="bg-[#6d4c41] text-white inline-block px-10 py-4 rounded-2xl w-full max-w-xl">
-              <h1 className="font-['Titan_One'] text-3xl md:text-4xl">TUGAS BAKTI</h1>
-              <p className="font-bold font-[Poppins] -mt-1">Kumpulkan tugas tepat waktu!</p>
+       <main className="relative bg-[#f9f4e8] w-full max-w-7xl p-8 pt-20 md:p-12 md:pt-28 rounded-2xl shadow-lg border-2 border-[#623B1C] mt-24 md:mt-32">
+
+          {/* Header yang di-absolute positioned */}
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 text-center w-full px-4">
+            <div className="bg-[#6d4c41] text-white inline-block px-8 py-4 rounded-2xl max-w-xl mx-auto">
+              <h1 className="font-['Titan_One'] text-2xl md:text-4xl">TUGAS BAKTI</h1>
+              <p className="font-bold font-[Poppins] text-sm md:text-base -mt-1">Kumpulkan tugas tepat waktu!</p>
             </div>
           </div>
 
-          <div className="relative z-10 flex flex-col gap-5">
+          <div className="relative z-10 flex flex-col gap-5 mt-8">
             {/* Desktop View */}
             <div className="hidden md:flex flex-col gap-5">
               {loading ? (
@@ -287,21 +322,31 @@ export const Pengumpulantugas = () => {
                     <div className="flex items-center gap-4 text-right">
                       <p className="text-sm text-[#d7ccc8] font-[poppins]">{task.deadline}</p>
                       <button
-                        onClick={() => !task.hasSubmitted && !isLate(task) && handleOpenModal(task)}
+                        onClick={() => {
+                          if (!task.hasSubmitted && !isLate(task)) {
+                            handleOpenModal(task);
+                          } else if (task.hasSubmitted && !isLate(task)) {
+                            handleEditSubmission(task);
+                          }
+                        }}
                         className={`px-6 py-3 rounded-lg font-bold text-sm transition-all ${
-                          task.hasSubmitted
-                            ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                            : isLate(task)
-                              ? 'bg-red-500 text-white cursor-not-allowed'
-                              : 'bg-gray-200 text-gray-800 hover:bg-gray-300 hover:scale-105 cursor-pointer'
+                          task.hasSubmitted && !isLate(task)
+                            ? 'bg-green-500 text-white hover:bg-green-600 hover:scale-105 cursor-pointer'
+                            : task.hasSubmitted && isLate(task)
+                              ? 'bg-green-500 text-white cursor-not-allowed'
+                              : isLate(task)
+                                ? 'bg-red-500 text-white cursor-not-allowed'
+                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300 hover:scale-105 cursor-pointer'
                         }`}
-                        disabled={task.hasSubmitted || isLate(task)}
+                        disabled={task.hasSubmitted && isLate(task) || isLate(task)}
                       >
-                        {task.hasSubmitted
-                          ? 'Sudah Dikumpulkan'
-                          : isLate(task)
-                            ? 'Terlambat'
-                            : 'Lihat Tugas'}
+                        {task.hasSubmitted && !isLate(task)
+                          ? 'Edit Tugas'
+                          : task.hasSubmitted && isLate(task)
+                            ? 'Sudah Dikumpulkan'
+                            : isLate(task)
+                              ? 'Terlambat'
+                              : 'Lihat Tugas'}
                       </button>
                     </div>
                   </div>
@@ -310,12 +355,7 @@ export const Pengumpulantugas = () => {
             </div>
 
             {/* Mobile View */}
-            <div className="md:hidden flex flex-col gap-5 relative z-10 mt-2">
-              <div className="bg-[#8d6e63] text-white inline-block px-6 py-3 rounded-xl w-full max-w-sm mx-auto text-center">
-                <h1 className="font-['Titan_One'] text-2xl">Tugas Bakti</h1>
-                <p className="font-semibold font-[Poppins] -mt-1 text-xs">Tugas jangan lupa dikumpul ya!</p>
-              </div>
-
+            <div className="md:hidden flex flex-col gap-5 relative z-10">
               {loading ? (
                 <p className="text-center text-gray-500">Memuat tugas...</p>
               ) : error ? (
@@ -332,15 +372,31 @@ export const Pengumpulantugas = () => {
                     <p className="text-sm text-[#d7ccc8] font-[poppins]">{task.deadline}</p>
                     <div className="flex gap-2 items-center justify-end">
                       <button
-                        onClick={() => !task.hasSubmitted && handleOpenModal(task)}
+                        onClick={() => {
+                          if (!task.hasSubmitted && !isLate(task)) {
+                            handleOpenModal(task);
+                          } else if (task.hasSubmitted && !isLate(task)) {
+                            handleEditSubmission(task);
+                          }
+                        }}
                         className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${
-                            task.hasSubmitted 
-                            ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
-                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300 cursor-pointer'
+                          task.hasSubmitted && !isLate(task)
+                            ? 'bg-green-500 text-white hover:bg-green-600 hover:scale-105 cursor-pointer'
+                            : task.hasSubmitted && isLate(task)
+                              ? 'bg-green-500 text-white cursor-not-allowed'
+                              : isLate(task)
+                                ? 'bg-red-500 text-white cursor-not-allowed'
+                                : 'bg-gray-200 text-gray-800 hover:bg-gray-300 cursor-pointer'
                         }`}
-                        disabled={task.hasSubmitted}
+                        disabled={task.hasSubmitted && isLate(task) || isLate(task)}
                       >
-                        {task.hasSubmitted ? "Sudah Dikumpulkan" : "Lihat Tugas"}
+                        {task.hasSubmitted && !isLate(task)
+                          ? 'Edit Tugas'
+                          : task.hasSubmitted && isLate(task)
+                            ? 'Sudah Dikumpulkan'
+                            : isLate(task)
+                              ? 'Terlambat'
+                              : 'Lihat Tugas'}
                       </button>
                     </div>
                   </div>
@@ -348,9 +404,9 @@ export const Pengumpulantugas = () => {
               )}
             </div>
           </div>
-          <img src={MotifBawah} alt="Decorative Pattern" className="hidden md:block absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 opacity-40" />
         </main>
       </div>
+      
       {selectedTask && !showSubmissionForm && (
         <TaskModal task={selectedTask} onClose={handleCloseModal} onKumpulClick={handleShowSubmissionForm} />
       )}

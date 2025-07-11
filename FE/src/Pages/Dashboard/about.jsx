@@ -37,6 +37,20 @@ export const About = () => {
         }}
       />
 
+      {/* ✅ Awan Mobile Terbalik */}
+      <img
+        src={Awan}
+        alt="Awan Atas Terbalik Mobile"
+        className="block lg:hidden absolute left-0 z-5"
+        style={{
+          width: "100%",
+          height: "25vh",
+          objectFit: "cover",
+          top: "-5vh",
+          transform: "scaleY(-1)",
+        }}
+      />
+
       {/* Ornamen Latar Belakang */}
       {bungaPositions.map((pos, index) => (
         <img
@@ -90,7 +104,7 @@ export const About = () => {
         <img
           src={Seni}
           alt="seni"
-          className="w-3/4 mx-auto mt-10 md:w-auto md:mt-0"
+          className="w-[100%] mx-auto mt-16 md:w-auto md:mt-0"
         />
       </div>
 
@@ -164,7 +178,7 @@ export const About = () => {
           {/* Card 3 */}
           <div className="bg-[#F6EDDD] w-full rounded-xl p-12 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
             <a
-              href="LINK_GOOGLE_DRIVE_ANDA" // <-- Ganti dengan link Anda
+              href="LINK_GOOGLE_DRIVE_ANDA" 
               target="_blank"
               rel="noopener noreferrer"
             >

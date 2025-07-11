@@ -12,7 +12,8 @@ export const AddTugas = () => {
     title: '',
     description: '',
     deadline: '', // date
-    deadlineTime: '' // time
+    deadlineHour: '', // jam 0-23
+    deadlineMinute: '' // menit 0-59
   });
   const navigate = useNavigate();
 
@@ -32,10 +33,18 @@ export const AddTugas = () => {
     }
     // Gabungkan date dan time
     let deadlineISO = formData.deadline;
-    if (formData.deadlineTime) {
-      deadlineISO = formData.deadline + 'T' + formData.deadlineTime + ':00.000Z';
+    if (formData.deadlineHour !== '' && formData.deadlineMinute !== '') {
+      // Format jam dan menit ke dua digit
+      const hour = String(formData.deadlineHour).padStart(2, '0');
+      const minute = String(formData.deadlineMinute).padStart(2, '0');
+      const localDate = new Date(formData.deadline + 'T' + hour + ':' + minute + ':00');
+      localDate.setHours(localDate.getHours() - 7);
+      deadlineISO = localDate.toISOString();
     } else {
-      deadlineISO = formData.deadline + 'T00:00:00.000Z';
+      // Jika tidak ada jam, asumsikan jam 00:00 WIB
+      const localDate = new Date(formData.deadline + 'T00:00:00');
+      localDate.setHours(localDate.getHours() - 7);
+      deadlineISO = localDate.toISOString();
     }
     try {
       setLoading(true);
@@ -52,7 +61,8 @@ export const AddTugas = () => {
           title: '',
           description: '',
           deadline: '',
-          deadlineTime: ''
+          deadlineHour: '',
+          deadlineMinute: ''
         });
         // Navigate back to tugas list after short delay
         setTimeout(() => {
@@ -192,19 +202,43 @@ export const AddTugas = () => {
                 </div>
                 <div className="mb-6">
                   <label
-                    htmlFor="deadlineTime"
+                    htmlFor="deadlineHour"
                     className="block text-gray-700 text-sm font-medium mb-2"
                   >
-                    Deadline (Jam, opsional)
+                    Deadline (Jam, 0-23)
                   </label>
-                  <input
-                    type="time"
-                    id="deadlineTime"
-                    name="deadlineTime"
-                    value={formData.deadlineTime}
+                  <select
+                    id="deadlineHour"
+                    name="deadlineHour"
+                    value={formData.deadlineHour}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  >
+                    <option value="">Pilih Jam</option>
+                    {[...Array(24).keys()].map(h => (
+                      <option key={h} value={h}>{h.toString().padStart(2, '0')}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-6">
+                  <label
+                    htmlFor="deadlineMinute"
+                    className="block text-gray-700 text-sm font-medium mb-2"
+                  >
+                    Deadline (Menit, 0-59)
+                  </label>
+                  <select
+                    id="deadlineMinute"
+                    name="deadlineMinute"
+                    value={formData.deadlineMinute}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Pilih Menit</option>
+                    {[...Array(60).keys()].map(m => (
+                      <option key={m} value={m}>{m.toString().padStart(2, '0')}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="flex justify-end">
