@@ -7,7 +7,8 @@ const loginLimiter = middleware.rateLimiter(5, 15 * 60 * 1000);
 
 // Public routes (tidak perlu authentication)
 router.post("/", middleware.register, userController.Register)
-router.post("/login", loginLimiter, middleware.isEmail, userController.Login)
+router.post("/login", userController.Login)
+// router.post("/login", loginLimiter, middleware.isEmail, userController.Login)
 
 
 router.post("/google-login", loginLimiter, userController.LoginWithGoogle)
