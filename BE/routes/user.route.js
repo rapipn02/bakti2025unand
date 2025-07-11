@@ -7,7 +7,12 @@ const loginLimiter = middleware.rateLimiter(5, 15 * 60 * 1000);
 
 // Public routes (tidak perlu authentication)
 router.post("/", middleware.register, userController.Register)
-router.post("/login", loginLimiter, middleware.isEmail, userController.Login)
+// router.post("/login", loginLimiter, middleware.isEmail, userController.Login)
+router.post("/login", (req, res) => {
+    console.log("--- RUTE /auth/login BERHASIL DIAKSES ---");
+    res.status(200).json({ status: 200, message: "Rute login berhasil dijangkau!" });
+});
+
 router.post("/google-login", loginLimiter, userController.LoginWithGoogle)
 router.post("/generate-code", middleware.isEmail, userController.GenerateCode);
 router.post("/forgotpassword", middleware.isEmail, userController.CheckCode);
