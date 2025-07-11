@@ -64,7 +64,7 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --timeout=600s \
-            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},PORT=${{ secrets.PORT }},JWT_TOKEN_KEY=${{ secrets.JWT_TOKEN_KEY }},JWT_REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_TOKEN_KEY }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_TOKEN_KEY=${{ secrets.JWT_TOKEN_KEY }},JWT_REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_TOKEN_KEY }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
 
   build-and-deploy-fe:
     name: Build & Deploy FE
