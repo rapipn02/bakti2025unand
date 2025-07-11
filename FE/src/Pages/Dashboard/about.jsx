@@ -5,8 +5,8 @@ import About1 from "../../assets/about/isometric view of colleagues having meeti
 import About2 from "../../assets/about/man and woman at work.svg";
 import About3 from "../../assets/about/isometric view of young woman working on laptop.svg";
 import About4 from "../../assets/about/avatar of happy thankful man holding hands near heart.svg";
-import Awan from "../../assets/auth/awanfull.svg";
 import BungaOrnamen from "../../assets/timeline/bunga.svg";
+
 export const About = () => {
   const bungaPositions = [
     { top: "15%", left: "10%" },
@@ -18,14 +18,15 @@ export const About = () => {
     { top: "55%", right: "12%" },
     { top: "75%", right: "8%" },
   ];
+
   return (
     <section
       id="about"
-      className="bg-[linear-gradient(to_bottom,#F6EDDD,#C3851D)]  px-4 pt-28 relative pb-24"
+      className="bg-[linear-gradient(to_bottom,#F6EDDD,#C3851D)] px-4 pt-28 relative pb-24"
     >
-      {/* Awan Desktop*/}
+      {/* ✅ Awan Desktop */}
       <img
-        src={Awan}
+        src="/awanfull.svg"
         alt="Awan Atas Terbalik"
         className="hidden lg:block absolute left-0 z-5"
         style={{
@@ -37,9 +38,9 @@ export const About = () => {
         }}
       />
 
-      {/* ✅ Awan Mobile Terbalik */}
+      {/* ✅ Awan Mobile */}
       <img
-        src={Awan}
+        src="/awanfull.svg"
         alt="Awan Atas Terbalik Mobile"
         className="block lg:hidden absolute left-0 z-5"
         style={{
@@ -95,12 +96,13 @@ export const About = () => {
           kampus kepada mahasiswa baru Universitas Andalas.
         </h2>
 
-        {/*  Scroll ke detail */}
+        {/* Tombol Buku Panduan */}
         <a className="w-[350px] h-[50px] px-9 py-3 bg-[#623B1C] rounded-[20px] shadow-[0px_5px_6px_0px_rgba(0,0,0,0.25)] flex justify-center items-center gap-2 z-10 mt-8 relative text-orange-100 text-2xl font-bold font-['League_Spartan'] duration-300 hover:scale-110 cursor-pointer">
           Buku Panduan
           <img className="w-8 h-8 ml-2" src={bookLogo} alt="Buku Panduan" />
         </a>
-        {/* Gambar Anda di sini */}
+
+        {/* Gambar Seni */}
         <img
           src={Seni}
           alt="seni"
@@ -108,13 +110,13 @@ export const About = () => {
         />
       </div>
 
-      {/*  Detail */}
+      {/* Detail Card Section */}
       <div className="mt-32 max-w-6xl mx-auto px-4 md:px-8 text-[#623B1C] font-['Poppins']">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16">
-          {/* Card 1 (Padding & perataan teks diubah) */}
+          {/* Card 1 */}
           <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
             <a
-              href="LINK_GOOGLE_DRIVE_ANDA" // <-- Ganti dengan link Anda
+              href="LINK_GOOGLE_DRIVE_ANDA"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -129,9 +131,9 @@ export const About = () => {
                     className="text-2xl md:text-3xl font-['Titan_One'] mb-4"
                     style={{
                       textShadow: `
-                      -2px -2px 0 white, 2px -2px 0 white,
-                      -2px 2px 0 white, 2px 2px 0 white
-                    `,
+                        -2px -2px 0 white, 2px -2px 0 white,
+                        -2px 2px 0 white, 2px 2px 0 white
+                      `,
                     }}
                   >
                     Rangers Afeksi
@@ -178,7 +180,7 @@ export const About = () => {
           {/* Card 3 */}
           <div className="bg-[#F6EDDD] w-full rounded-xl p-12 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
             <a
-              href="LINK_GOOGLE_DRIVE_ANDA" 
+              href="LINK_GOOGLE_DRIVE_ANDA"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -193,9 +195,9 @@ export const About = () => {
                     className="text-3xl font-['Titan_One'] mb-3"
                     style={{
                       textShadow: `
-                  -2px -2px 0 white, 2px -2px 0 white,
-                  -2px 2px 0 white, 2px 2px 0 white
-                `,
+                        -2px -2px 0 white, 2px -2px 0 white,
+                        -2px 2px 0 white, 2px 2px 0 white
+                      `,
                     }}
                   >
                     Maba's Task
@@ -214,7 +216,7 @@ export const About = () => {
           {/* Card 4 */}
           <div className="bg-[#F6EDDD] w-full rounded-xl p-6 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-all flex flex-col">
             <a
-              href="https://drive.google.com/drive/folders/1Q6HxFuM5wgYiozcqfAt9Yl4pAwpAHKpq?usp=drive_link" // <-- Ganti dengan link Anda
+              href="https://drive.google.com/drive/folders/1Q6HxFuM5wgYiozcqfAt9Yl4pAwpAHKpq?usp=drive_link"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -222,16 +224,16 @@ export const About = () => {
                 <img
                   className="w-full md:w-[200px] h-auto object-contain flex-shrink-0"
                   src={About4}
-                  alt="Ukm dan Himada"
+                  alt="UKM dan HIMADA"
                 />
                 <div className="flex-1 text-center">
                   <h3
                     className="text-2xl font-['Titan_One'] mb-3"
                     style={{
                       textShadow: `
-                  -2px -2px 0 white, 2px -2px 0 white,
-                  -2px 2px 0 white, 2px 2px 0 white
-                `,
+                        -2px -2px 0 white, 2px -2px 0 white,
+                        -2px 2px 0 white, 2px 2px 0 white
+                      `,
                     }}
                   >
                     UKM dan HIMADA
