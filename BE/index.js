@@ -26,10 +26,26 @@ const prismaMiddleware = async (req, res, next) => {
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+
+// Cek koneksi ke database saat startup
+(async () => {
+    try {
+        await prisma.$connect();
+        console.log("[PRISMA] Berhasil terkoneksi ke database!");
+    } catch (err) {
+        console.error("[PRISMA] Gagal koneksi ke database:", err);
+    }
+})();
+
 // app.use(prismaMiddleware);
 app.use(async (req, res, next) => {
     try {
+        await prisma.$connect();
+        console.log(`[PRISMA] Koneksi DB OK untuk ${req.method} ${req.url}`);
         await next();
+    } catch (err) {
+        console.error(`[PRISMA] ERROR koneksi DB untuk ${req.method} ${req.url}:`, err);
+        return res.status(500).json({ status: 500, message: "Database connection error", error: err.message });
     } finally {
         await prisma.$disconnect();
     }
