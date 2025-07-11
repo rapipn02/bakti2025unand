@@ -7,7 +7,7 @@ exports.AddTugas = async (req, res) => {
     try {
         const { title, description, deadline } = req.body;
 
-        const data = await prisma.tugas.create({
+        const data = await prisma.Tugas.create({
             data: {
                 title,
                 description,
@@ -42,7 +42,7 @@ exports.DeleteTugas = async (req, res) => {
     try {
         const id = req.query.id;
 
-        const data = await prisma.tugas.delete({
+        const data = await prisma.Tugas.delete({
             where: {
                 id
             }
@@ -75,7 +75,7 @@ exports.EditTugas = async (req, res) => {
         const { id, title, description, deadline } = req.body;
         console.log(req.body)
 
-        const data = await prisma.tugas.update({ where: { id }, data: { title, description, deadline: new Date(deadline) } })
+        const data = await prisma.Tugas.update({ where: { id }, data: { title, description, deadline: new Date(deadline) } })
         if (data) {
             return res.status(200).json({
                 status: 200,
@@ -99,7 +99,7 @@ exports.EditTugas = async (req, res) => {
 exports.GetTugas = async (req, res) => {
     try {
 
-        const data = await prisma.tugas.findMany({
+        const data = await prisma.Tugas.findMany({
             include: {
                 Kumpul_Tugas: true
             },
@@ -459,7 +459,7 @@ exports.KumpulTugas = async (req, res) => {
         }
 
         // Ambil data tugas untuk cek deadline
-        const tugas = await prisma.tugas.findUnique({ where: { id: id_tugas } });
+        const tugas = await prisma.Tugas.findUnique({ where: { id: id_tugas } });
         if (!tugas) {
             return res.status(404).json({
                 status: 404,
@@ -515,7 +515,7 @@ exports.EditKumpulTugas = async (req, res) => {
         if (!kumpulTugas) {
             return res.status(404).json({ status: 404, message: "Pengumpulan tugas tidak ditemukan." });
         }
-        const tugas = await prisma.tugas.findUnique({ where: { id: kumpulTugas.id_tugas } });
+        const tugas = await prisma.Tugas.findUnique({ where: { id: kumpulTugas.id_tugas } });
         if (!tugas) {
             return res.status(404).json({ status: 404, message: "Tugas tidak ditemukan." });
         }

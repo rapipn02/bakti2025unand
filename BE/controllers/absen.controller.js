@@ -302,7 +302,7 @@ exports.AdminScanParticipantQR = async (req, res) => {
             });
         }
 
-        const kelompokExist = await prisma.kelompok.findUnique({
+        const kelompokExist = await prisma.Kelompok.findUnique({
             where: {id: id_kelompok}
         });
         if (!kelompokExist) {
@@ -315,13 +315,13 @@ exports.AdminScanParticipantQR = async (req, res) => {
         let anggotaKelompok;
         // Cek apakah participantIdentifier adalah UUID (panjang 36 dengan '-')
         if (participantIdentifier.length === 36 && participantIdentifier.includes('-')) {
-             anggotaKelompok = await prisma.anggota_Kelompok.findUnique({
+             anggotaKelompok = await prisma.Anggota_Kelompok.findUnique({
                 where: { id: participantIdentifier }
             });
         }
         // Jika tidak ketemu dengan ID atau bukan format UUID, coba dengan NIM
         if (!anggotaKelompok) {
-            anggotaKelompok = await prisma.anggota_Kelompok.findUnique({
+            anggotaKelompok = await prisma.Anggota_Kelompok.findUnique({
                 where: { nim: participantIdentifier } // Pastikan 'nim' unik di skema Anda
             });
         }
@@ -422,7 +422,7 @@ exports.ScanQRAbsensi = async (req, res) => {
         }
 
         // Cari mahasiswa berdasarkan NIM
-        const mahasiswa = await prisma.anggota_Kelompok.findUnique({
+        const mahasiswa = await prisma.Anggota_Kelompok.findUnique({
             where: { nim: nim },
             include: {
                 kelompok: true

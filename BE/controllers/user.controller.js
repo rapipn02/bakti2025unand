@@ -174,7 +174,7 @@ exports.GenerateCode = async (req, res) => {
     }
 
     try {
-      await prisma.verify.deleteMany({
+      await prisma.Verify.deleteMany({
         where: {
           userId: check.id,
         },
@@ -183,7 +183,7 @@ exports.GenerateCode = async (req, res) => {
       console.log("Failed delete code", error);
     }
 
-    const code = await prisma.verify.create({
+    const code = await prisma.Verify.create({
       data: {
         userId: check.id,
         code: crypto.randomUUID().slice(0, 8).toUpperCase(),
@@ -222,7 +222,7 @@ exports.GenerateCode = async (req, res) => {
 
 exports.CheckCode = async (req, res) => {
   try {
-    const code = await prisma.verify.findFirst({
+    const code = await prisma.Verify.findFirst({
       orderBy: {
         createAt: "desc",
       },
@@ -255,7 +255,7 @@ exports.CheckCode = async (req, res) => {
         });
       }
       try {
-        await prisma.verify.deleteMany({
+        await prisma.Verify.deleteMany({
           where: {
             userId: req.body.userId,
           },
