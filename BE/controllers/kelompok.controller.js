@@ -414,7 +414,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
                     }
                 })
             } else if (nim) {
-                data = await prisma.Anggota_Kelompok.findMany({
+                data = await prisma.Anggota_kelompok.findMany({
                     take: limit,
                     skip,
                     where: {

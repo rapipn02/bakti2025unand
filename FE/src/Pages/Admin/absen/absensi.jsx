@@ -79,7 +79,7 @@ export const Absensi = () => {
     setLoadingAnggota(true);
     try {
       // Call API to get anggota kelompok with their absensi status for selected kegiatan
-      const response = await fetch(`http://localhost:4000/kelompok/anggota/with-absensi?id_kelompok=${selectedKelompok}&id_absen=${selectedKegiatan}`, {
+      const response = await fetch(`https://api-service-930832027948.asia-southeast2.run.app/kelompok/anggota/with-absensi?id_kelompok=${selectedKelompok}&id_absen=${selectedKegiatan}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json'
