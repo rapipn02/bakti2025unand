@@ -76,7 +76,7 @@ app.get("/test", async (req, res) => {
 })
 app.get("/test2", async (req, res) => {
     try {
-        const data = await prisma.anggota_Kelompok.findMany()
+        const data = await prisma.Anggota_Kelompok.findMany()
         return res.status(200).json({
             status: 200,
             message: "Berhasil",

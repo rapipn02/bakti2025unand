@@ -138,7 +138,7 @@ exports.GetKumpulTugas = async (req, res) => {
         const limit = 10;
         const skip = (page - 1) * limit
         if (page) {
-            const data = await prisma.kumpul_Tugas.findMany({
+            const data = await prisma.Kumpul_Tugas.findMany({
                 take: limit,
                 skip,
                 // orderBy: {
@@ -152,7 +152,7 @@ exports.GetKumpulTugas = async (req, res) => {
                     tugas: true
                 }
             })
-            const totalItems = await prisma.kumpul_Tugas.count()
+            const totalItems = await prisma.Kumpul_Tugas.count()
             const totalPages = Math.ceil(totalItems / limit)
 
             if (data) {
@@ -170,7 +170,7 @@ exports.GetKumpulTugas = async (req, res) => {
                 })
             }
         }
-        const data = await prisma.kumpul_Tugas.findMany({
+        const data = await prisma.Kumpul_Tugas.findMany({
             // orderBy: {
             //     createAt: "desc"
             // },
@@ -213,7 +213,7 @@ exports.GetKumpulTugasByKelompok = async (req, res) => {
         const kelompok = parseInt(req.query.kelompok);
         const tugas = req.query.tugas
         if (page) {
-            const data = await prisma.kumpul_Tugas.findMany({
+            const data = await prisma.Kumpul_Tugas.findMany({
                 take: limit,
                 skip,
                 where: {
@@ -231,7 +231,7 @@ exports.GetKumpulTugasByKelompok = async (req, res) => {
                     tugas: true
                 }
             })
-            const totalItems = await prisma.kumpul_Tugas.count({
+            const totalItems = await prisma.Kumpul_Tugas.count({
                 where: {
                     kelompok,
                     id_tugas: tugas
@@ -254,7 +254,7 @@ exports.GetKumpulTugasByKelompok = async (req, res) => {
                 })
             }
         }
-        const data = await prisma.kumpul_Tugas.findMany({
+        const data = await prisma.Kumpul_Tugas.findMany({
             where: {
                 kelompok,
                 id_tugas: tugas
@@ -306,7 +306,7 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
             let data = []
             let totalItems = 0
             if (nama) {
-                data = await prisma.kumpul_Tugas.findMany({
+                data = await prisma.Kumpul_Tugas.findMany({
                     take: limit,
                     skip,
                     where: {
@@ -323,7 +323,7 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
                         tugas: true
                     }
                 })
-                totalItems = await prisma.kumpul_Tugas.count({
+                totalItems = await prisma.Kumpul_Tugas.count({
                     where: {
                         kelompok,
                         nama: {
@@ -332,7 +332,7 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
                     },
                 })
             } else if (nim) {
-                data = await prisma.kumpul_Tugas.findMany({
+                data = await prisma.Kumpul_Tugas.findMany({
                     take: limit,
                     skip,
                     where: {
@@ -349,7 +349,7 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
                         tugas: true
                     }
                 })
-                totalItems = await prisma.kumpul_Tugas.count({
+                totalItems = await prisma.Kumpul_Tugas.count({
                     where: {
                         kelompok,
                         nama: {
@@ -377,7 +377,7 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
         }
         let data = []
         if (nama) {
-            data = await prisma.kumpul_Tugas.findMany({
+            data = await prisma.Kumpul_Tugas.findMany({
                 where: {
                     kelompok,
                     nama: {
@@ -396,7 +396,7 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
                 }
             })
         } else if (nim) {
-            data = await prisma.kumpul_Tugas.findMany({
+            data = await prisma.Kumpul_Tugas.findMany({
                 where: {
                     kelompok,
                     nim: {
@@ -444,7 +444,7 @@ exports.KumpulTugas = async (req, res) => {
         const { id_user, id_tugas, nama, nim, kelompok, link_tugas } = req.body;
 
         // Cek apakah user sudah pernah mengumpulkan tugas ini sebelumnya
-        const existingSubmission = await prisma.kumpul_Tugas.findFirst({
+        const existingSubmission = await prisma.Kumpul_Tugas.findFirst({
             where: {
                 id_user,
                 id_tugas
@@ -473,7 +473,7 @@ exports.KumpulTugas = async (req, res) => {
             });
         }
 
-        const data = await prisma.kumpul_Tugas.create({
+        const data = await prisma.Kumpul_Tugas.create({
             data: {
                 id_user,
                 id_tugas,
@@ -511,7 +511,7 @@ exports.EditKumpulTugas = async (req, res) => {
         const { id, nama, nim, kelompok, link_tugas } = req.body;
 
         // Ambil data tugas untuk cek deadline
-        const kumpulTugas = await prisma.kumpul_Tugas.findUnique({ where: { id } });
+        const kumpulTugas = await prisma.Kumpul_Tugas.findUnique({ where: { id } });
         if (!kumpulTugas) {
             return res.status(404).json({ status: 404, message: "Pengumpulan tugas tidak ditemukan." });
         }
@@ -523,7 +523,7 @@ exports.EditKumpulTugas = async (req, res) => {
             return res.status(400).json({ status: 400, message: "Sudah lewat deadline, tidak bisa edit tugas." });
         }
 
-        const data = await prisma.kumpul_Tugas.update({
+        const data = await prisma.Kumpul_Tugas.update({
             where: { id },
             data: { nama, nim, kelompok, link_tugas }
         });

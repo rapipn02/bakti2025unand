@@ -154,7 +154,7 @@ exports.AddAnggotaKelompok = async (req, res) => {
     try {
         const { id_kelompok, nama, nim } = req.body;
 
-        const check = await prisma.anggota_Kelompok.findFirst({
+        const check = await prisma.Anggota_Kelompok.findFirst({
             where: {
                 nim
             }
@@ -165,7 +165,7 @@ exports.AddAnggotaKelompok = async (req, res) => {
                 message: `Maba ( ${nim} ) sudah ada!`,
             })
         }
-        const data = await prisma.anggota_Kelompok.create({
+        const data = await prisma.Anggota_Kelompok.create({
             data: {
                 id_kelompok,
                 nama,
@@ -208,7 +208,7 @@ exports.GenerateAnggotaQR = async (req, res) => {
         }
 
         // Cari anggota di database untuk memastikan datanya valid
-        const anggota = await prisma.anggota_Kelompok.findUnique({
+        const anggota = await prisma.Anggota_Kelompok.findUnique({
             where: { id: anggotaId }
         });
 
@@ -241,7 +241,7 @@ exports.DeleteAnggotaKelompok = async (req, res) => {
     try {
         const id = req.query.id;
 
-        const data = await prisma.anggota_Kelompok.delete({
+        const data = await prisma.Anggota_Kelompok.delete({
             where: {
                 id
             }
@@ -274,7 +274,7 @@ exports.EditAnggotaKelompok = async (req, res) => {
         const { id, nama, nim, id_kelompok } = req.body;
         console.log(req.body)
 
-        const data = await prisma.anggota_Kelompok.update({ where: { id }, data: { nama, nim, id_kelompok } })
+        const data = await prisma.Anggota_Kelompok.update({ where: { id }, data: { nama, nim, id_kelompok } })
         if (data) {
             return res.status(200).json({
                 status: 200,
@@ -303,7 +303,7 @@ exports.GetAnggotaKelompokById = async (req, res) => {
         const kelompok = req.query.kelompok;
 
         if (page) {
-            const data = await prisma.anggota_Kelompok.findMany({
+            const data = await prisma.Anggota_Kelompok.findMany({
                 take: limit,
                 skip,
                 where: {
@@ -318,7 +318,7 @@ exports.GetAnggotaKelompokById = async (req, res) => {
                 }
             })
 
-            const totalItems = await prisma.anggota_Kelompok.count({
+            const totalItems = await prisma.Anggota_Kelompok.count({
                 where: {
                     id_kelompok: kelompok
                 }
@@ -340,7 +340,7 @@ exports.GetAnggotaKelompokById = async (req, res) => {
                 })
             }
         }
-        const data = await prisma.anggota_Kelompok.findMany({
+        const data = await prisma.Anggota_Kelompok.findMany({
             where: {
                 id_kelompok: kelompok
             },
@@ -388,7 +388,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
             let data = []
             let totalItems = 0
             if (nama) {
-                data = await prisma.anggota_Kelompok.findMany({
+                data = await prisma.Anggota_Kelompok.findMany({
                     where: {
                         nama: {
                             contains: nama,
@@ -405,7 +405,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
                         absensi: true
                     }
                 })
-                totalItems = await prisma.anggota_Kelompok.count({
+                totalItems = await prisma.Anggota_Kelompok.count({
                     where: {
                         nama: {
                             contains: nama,
@@ -414,7 +414,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
                     }
                 })
             } else if (nim) {
-                data = await prisma.anggota_Kelompok.findMany({
+                data = await prisma.Anggota_Kelompok.findMany({
                     take: limit,
                     skip,
                     where: {
@@ -431,7 +431,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
                         absensi: true
                     }
                 })
-                totalItems = await prisma.anggota_Kelompok.count({
+                totalItems = await prisma.Anggota_Kelompok.count({
                     where: {
                         nim: {
                             contains: nim,
@@ -460,7 +460,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
         }
         let data = []
         if (nama) {
-            data = await prisma.anggota_Kelompok.findMany({
+            data = await prisma.Anggota_Kelompok.findMany({
                 where: {
                     nama: {
                         contains: nama,
@@ -476,7 +476,7 @@ exports.GetSearchAnggotaKelompokById = async (req, res) => {
                 }
             })
         } else if (nim) {
-            data = await prisma.anggota_Kelompok.findMany({
+            data = await prisma.Anggota_Kelompok.findMany({
                 where: {
                     nim: {
                         contains: nim,
@@ -523,7 +523,7 @@ exports.GetAllAnggotaKelompok = async (req, res) => {
         if (page) {
 
             // const [data, totalItems] = await prisma.$transaction([
-            //     prisma.anggota_Kelompok.findMany({
+            //     prisma.Anggota_Kelompok.findMany({
             //         skip: skip,
             //         take: limit,
             //         include: {
@@ -531,9 +531,9 @@ exports.GetAllAnggotaKelompok = async (req, res) => {
             //             absensi: true
             //         }
             //     }),
-            //     prisma.anggota_Kelompok.count()
+            //     prisma.Anggota_Kelompok.count()
             // ]);
-            const data = await prisma.anggota_Kelompok.findMany({
+            const data = await prisma.Anggota_Kelompok.findMany({
                 skip: skip,
                 take: limit,
                 orderBy: {
@@ -544,7 +544,7 @@ exports.GetAllAnggotaKelompok = async (req, res) => {
                     absensi: true
                 }
             })
-            const totalItems = await prisma.anggota_Kelompok.count()
+            const totalItems = await prisma.Anggota_Kelompok.count()
             const totalPages = Math.ceil(totalItems / limit);
 
             if (data.length > 0) {
@@ -562,7 +562,7 @@ exports.GetAllAnggotaKelompok = async (req, res) => {
                 })
             }
         }
-        const data = await prisma.anggota_Kelompok.findMany({
+        const data = await prisma.Anggota_Kelompok.findMany({
             orderBy: {
                 nim: "asc"
             },
@@ -608,7 +608,7 @@ exports.GetAnggotaKelompokWithAbsensi = async (req, res) => {
         }
 
         // Get all anggota in kelompok with their absensi status for the specific kegiatan
-        const anggotaKelompok = await prisma.anggota_Kelompok.findMany({
+        const anggotaKelompok = await prisma.Anggota_Kelompok.findMany({
             where: {
                 id_kelompok: id_kelompok
             },
@@ -669,7 +669,7 @@ exports.GetAnggotaByNim = async (req, res) => {
             });
         }
 
-        const anggota = await prisma.anggota_Kelompok.findUnique({
+        const anggota = await prisma.Anggota_Kelompok.findUnique({
             where: {
                 nim: nim
             },

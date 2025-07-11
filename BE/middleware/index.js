@@ -118,7 +118,7 @@ module.exports = {
                     error: validate.errors
                 })
             }
-            const checkEmail = await prisma.user.findFirst({
+            const checkEmail = await prisma.User.findFirst({
                 where: { email }
             })
             if (checkEmail) {
@@ -176,7 +176,7 @@ module.exports = {
             }
 
             // Validasi apakah kelompok exists
-            const kelompok = await prisma.kelompok.findUnique({
+            const kelompok = await prisma.Kelompok.findUnique({
                 where: { id: parseInt(kelompokId) }
             });
 
@@ -208,7 +208,7 @@ module.exports = {
             }
 
             // Validasi apakah tugas exists
-            const tugas = await prisma.tugas.findUnique({
+            const tugas = await prisma.Tugas.findUnique({
                 where: { id: tugasId }
             });
 
