@@ -8,7 +8,7 @@ exports.AddKelompok = async (req, res) => {
     try {
         const { nomor } = req.body;
 
-        const check = await prisma.kelompok.findFirst({
+        const check = await prisma.Kelompok.findFirst({
             where: {
                 nomor
             }
@@ -21,7 +21,7 @@ exports.AddKelompok = async (req, res) => {
             })
         }
 
-        const data = await prisma.kelompok.create({
+        const data = await prisma.Kelompok.create({
             data: {
                 nomor
             }
@@ -53,7 +53,7 @@ exports.DeleteKelompok = async (req, res) => {
     try {
         const id = req.query.id;
 
-        const check = await prisma.kelompok.findFirst({
+        const check = await prisma.Kelompok.findFirst({
             where: {
                 id
             }
@@ -66,7 +66,7 @@ exports.DeleteKelompok = async (req, res) => {
             })
         }
 
-        const data = await prisma.kelompok.delete({
+        const data = await prisma.Kelompok.delete({
             where: {
                 id
             }
@@ -98,7 +98,7 @@ exports.GetKelompok = async (req, res) => {
     try {
         const anggota = req.query.anggota;
         if (anggota === "true") {
-            const data = await prisma.kelompok.findMany({
+            const data = await prisma.Kelompok.findMany({
                 include: {
                     Anggota_Kelompok: true
                 },
@@ -121,7 +121,7 @@ exports.GetKelompok = async (req, res) => {
                 })
             }
         }
-        const data = await prisma.kelompok.findMany({
+        const data = await prisma.Kelompok.findMany({
             orderBy: {
                 nomor: "asc"
             }
