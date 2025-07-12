@@ -7,7 +7,7 @@ import About1 from "../../assets/about/isometric view of colleagues having meeti
 import About2 from "../../assets/about/man and woman at work.svg";
 import About3 from "../../assets/about/isometric view of young woman working on laptop.svg";
 import About4 from "../../assets/about/avatar of happy thankful man holding hands near heart.svg";
-import Awan from "/awanfull.svg";
+import Awan from "/awanfull.png";
 import BungaOrnamen from "../../assets/timeline/bunga.svg";
 export const About = () => {
   const bungaPositions = [

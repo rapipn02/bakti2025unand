@@ -3,7 +3,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import BackgroundImage from "/background.webp";
 import HomeMobile from "/baktiunandmobile.webp";
-import Awan from "/awanfull.svg";
+import Awan from "/awanfull.png";
 import Navbar from "../../component/Navbar";
 import About from "./about";
 import Mascot from "./mascot";
