@@ -26,7 +26,7 @@ export const About = () => {
     >
       {/* ✅ Awan Desktop */}
       <img
-        src="/awanfull.svg"
+        src="/awanfull.webp"
         alt="Awan Atas Terbalik"
         className="hidden lg:block absolute left-0 z-5"
         style={{
@@ -40,7 +40,7 @@ export const About = () => {
 
       {/* ✅ Awan Mobile */}
       <img
-        src="/awanfull.svg"
+        src="/awanfull.webp"
         alt="Awan Atas Terbalik Mobile"
         className="block lg:hidden absolute left-0 z-5"
         style={{

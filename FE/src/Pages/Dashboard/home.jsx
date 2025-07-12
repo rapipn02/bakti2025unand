@@ -1,7 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import Navbar from "../../component/Navbar";
-import BackgroundImage from "/background.svg";
-import HomeMobile from "/baktiunandmobile.svg";
+import BackgroundImage from "/background.webp";
+import HomeMobile from "/baktiunandmobile.webp";
 import Awan from "/awanfull.svg";
 import Loading from "../../component/loading";
 
