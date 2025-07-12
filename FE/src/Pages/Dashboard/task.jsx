@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import MotifKiri from "../../assets/task/mendung.svg";
 import MotifKanan from "../../assets/task/mendung kanan.svg";
 import BungaOrnamen from "../../assets/timeline/bunga.svg";
@@ -12,7 +15,12 @@ const bungaPositions = [
   { top: "80%", left: "40%" },
   { top: "50%", right: "2%" },
 ];
+
 export const Task = () => {
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
+
   return (
     <section
       id="task"
@@ -26,32 +34,34 @@ export const Task = () => {
           alt="Bunga Ornamen"
           className="absolute w-20 lg:w-24 opacity-70"
           style={{ ...pos }}
+          data-aos="fade"
         />
       ))}
-      {/* =================================================================== */}
-      {/* TAMPILAN MOBILE (Hanya terlihat di layar kecil, tersembunyi di lg ke atas) */}
-      {/* =================================================================== */}
-      <div className="block lg:hidden w-full">
+
+      {/* MOBILE */}
+      <div className="block lg:hidden w-full" data-aos="fade-up">
         <div className="relative w-full max-w-xs mx-auto">
           {/* Ornamen Mobile */}
           <img
             src={MotifKiri}
             alt="Ornamen Kiri"
             className="absolute -top-4 -left-12 w-28 z-0 opacity-80"
+            data-aos="fade-right"
           />
           <img
             src={MotifKanan}
             alt="Ornamen Kanan"
             className="absolute -bottom-4 -right-12 w-28 z-0 opacity-80"
+            data-aos="fade-left"
           />
 
           {/* Konten Mobile */}
           <div className="relative z-10 flex flex-col items-center">
-            {/* Blok Judul Mobile */}
-            <div className="relative z-20">
-              <div className="absolute inset-x-[-1rem] top-1/2 -translate-y-1/2 h-10  z-[-1]"></div>
+            {/* Judul Mobile */}
+            <div className="relative z-20" data-aos="zoom-in">
+              <div className="absolute inset-x-[-1rem] top-1/2 -translate-y-1/2 h-10 z-[-1]"></div>
               <h1
-                className=" font-['Titan_One'] text-2xl px-4 text-[#623B1C]"
+                className="font-['Titan_One'] text-2xl px-4 text-[#623B1C]"
                 style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.4)" }}
               >
                 BAKTI CHALLENGE
@@ -59,7 +69,10 @@ export const Task = () => {
             </div>
 
             {/* Kartu Depan Mobile */}
-            <div className="relative z-10 bg-[#FBF3E6] border-2 border-[#D9BFA2] rounded-2xl shadow-lg p-6 pt-8 text-center w-full flex flex-col items-center -mt-5">
+            <div
+              className="relative z-10 bg-[#FBF3E6] border-2 border-[#D9BFA2] rounded-2xl shadow-lg p-6 pt-8 text-center w-full flex flex-col items-center -mt-5"
+              data-aos="fade-up"
+            >
               <p className="text-sm font-semibold text-[#5E4A3A] font-['Poppins']">
                 Are you ready for BAKTI CHALLENGE ?
               </p>
@@ -78,28 +91,35 @@ export const Task = () => {
         </div>
       </div>
 
-      {/* ===================================================================== */}
-      {/* TAMPILAN DESKTOP (Tersembunyi di layar kecil, hanya terlihat di lg ke atas) */}
-      {/* ===================================================================== */}
-      <div className="hidden lg:block w-full">
+      {/* DESKTOP */}
+      <div className="hidden lg:block w-full" data-aos="fade-up">
         {/* Ornamen Latar Belakang Desktop */}
         <img
           src={MotifKiri}
           alt="Ornamen Kanan Bawah"
-          className="absolute top-[12.5rem] -translate-y-1/2 left-0 w-92 z-0"
+          className="absolute -top-[2.5rem] -translate-y-1/2 -left-4 w-92 z-0"
+          data-aos="fade-right"
         />
         <img
           src={MotifKanan}
           alt="Ornamen Atas"
           className="absolute bottom-0 right-0 translate-x-32 w-[500px] z-0 -scale-x-100"
+          data-aos="fade-left"
         />
-        {/* Konten Utama Desktop (Kode asli Anda) */}
+
+        {/* Konten Utama Desktop */}
         <div className="relative z-10 grid place-items-center w-full max-w-4xl mx-auto">
           {/* Lapisan Belakang Kartu */}
-          <div className="bg-[#69432A] w-10/12 h-56 rounded-2xl col-start-1 row-start-1"></div>
+          <div
+            className="bg-[#69432A] w-10/12 h-56 rounded-2xl col-start-1 row-start-1"
+            data-aos="zoom-in"
+          ></div>
 
           {/* Kartu Depan */}
-          <div className="bg-[#FBF3E6] border border-[#D9BFA2] rounded-2xl shadow-lg p-8 text-center w-full max-w-xl col-start-1 row-start-1 flex flex-col items-center">
+          <div
+            className="bg-[#FBF3E6] border border-[#D9BFA2] rounded-2xl shadow-lg p-8 text-center w-full max-w-xl col-start-1 row-start-1 flex flex-col items-center"
+            data-aos="fade-up"
+          >
             {/* Judul */}
             <div
               className="absolute -top-6 left-1/2 -translate-x-1/2 px-6 py-2 text-[#69432A] font-['Titan_One'] text-3xl"
@@ -107,6 +127,7 @@ export const Task = () => {
                 textShadow:
                   "-2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white, 0 0 10px rgba(0,0,0,0.5), 0 0 15px rgba(0,0,0,0.4)",
               }}
+              data-aos="zoom-in"
             >
               BAKTI CHALLENGE
             </div>

@@ -1,23 +1,24 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
-import Navbar from "../../component/Navbar";
+import React, { useState, useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import BackgroundImage from "/background.webp";
-import HomeMobile from "/baktiunandmobile.webp";
+const HomeMobile = "/baktiunandmobile.webp";
 import Awan from "/awanfull.svg";
+import Navbar from "../../component/Navbar";
+import About from "./about";
+import Mascot from "./mascot";
+import Timeline from "./timeline";
+import Task from "./task";
+import Gallery from "./gallery";
+import Footer from "../../component/footer";
 import Loading from "../../component/loading";
-
-// Lazy-load heavy sections
-const About = lazy(() => import("./about"));
-const Mascot = lazy(() => import("./mascot"));
-const Timeline = lazy(() => import("./timeline"));
-const Task = lazy(() => import("./task"));
-const Gallery = lazy(() => import("./gallery"));
-const Footer = lazy(() => import("../../component/footer"));
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const hasLoaded = sessionStorage.getItem("hasLoadedInSession");
+
     if (!hasLoaded) {
       const timer = setTimeout(() => {
         setLoading(false);
@@ -27,6 +28,12 @@ const Home = () => {
     } else {
       setLoading(false);
     }
+
+    // Inisialisasi AOS agar animasi selalu muncul saat elemen masuk viewport
+    AOS.init({
+      duration: 1000,
+      once: false, // ⚠️ set to false agar animasi muncul berulang kali saat scroll
+    });
   }, []);
 
   if (loading) {
@@ -39,18 +46,19 @@ const Home = () => {
 
       {/* Hero Section */}
       <section id="home" className="relative h-screen w-full overflow-hidden">
-        {/* Background Images */}
+        {/* Background */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center hidden lg:block"
-          style={{ backgroundImage: `url('${BackgroundImage}')` }}
+          style={{ backgroundImage: `url(${BackgroundImage})` }}
         />
         <div
           className="absolute inset-0 z-0 bg-cover bg-center block lg:hidden"
-          style={{ backgroundImage: `url('${HomeMobile}')` }}
+          style={{ backgroundImage: `url(${HomeMobile})` }}
         />
 
         {/* Desktop Heading */}
         <div
+          data-aos="zoom-in"
           className="hidden lg:block relative w-full max-w-4xl mx-auto mt-6 text-[#623B1C] font-['Carena'] text-center z-10"
           style={{
             textShadow: `
@@ -69,6 +77,7 @@ const Home = () => {
 
         {/* Mobile Heading */}
         <div
+          data-aos="zoom-in"
           className="block lg:hidden relative w-full max-w-4xl mx-auto mt-6 text-[#623B1C] font-['Carena'] text-center z-10"
           style={{
             textShadow: `
@@ -81,46 +90,72 @@ const Home = () => {
             `,
           }}
         >
-          <div className="text-3xl font-normal mt-34 ml-[6rem]">BAKTI UNAND</div>
+          <div className="text-3xl font-normal mt-34 ml-[6rem]">
+            BAKTI UNAND
+          </div>
           <div className="text-4xl font-normal mt-2 ml-[6rem]">2025</div>
         </div>
 
-        {/* Awan */}
+        {/* Awan untuk Desktop */}
         <img
           src={Awan}
-          alt="Awan Kiri"
+          alt="Awan Desktop"
           className="hidden lg:block absolute left-0 z-5"
-          style={{ width: "100%", height: "25vh", objectFit: "cover", bottom: "-10vh" }}
+          style={{
+            width: "100%",
+            height: "25vh",
+            objectFit: "cover",
+            bottom: "-10vh",
+          }}
         />
+
+        {/* Awan untuk Mobile */}
         <img
           src={Awan}
           alt="Awan Mobile"
           className="block lg:hidden absolute left-0 z-5"
-          style={{ width: "100%", height: "auto", bottom: "-20vh" }}
+          style={{
+            width: "100%",
+            height: "15vh",
+            objectFit: "cover",
+            bottom: "-1vh",
+          }}
         />
 
-        {/* Get Started */}
-        <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[75px] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer">
-          <a href="/login" className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]">
+        {/* Get Started Button for Desktop */}
+        <div
+          data-aos="zoom-in"
+          className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[75px] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
+        >
+          <a
+            href="/login"
+            className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+          >
             Get Started
           </a>
         </div>
-        <div className="flex lg:hidden relative mt-2 ml-auto mr-18 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer">
-          <a href="/login" className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]">
+
+        {/* Get Started Button for Mobile */}
+        <div
+          data-aos="zoom-in"
+          className="flex lg:hidden relative mt-2 ml-auto mr-18 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
+        >
+          <a
+            href="/login"
+            className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+          >
             Get Started
           </a>
         </div>
       </section>
 
-      {/* Other Sections - Lazy Loaded */}
-      <Suspense fallback={<div className="text-center text-yellow-900 py-16">Memuat konten...</div>}>
-        <About />
-        <Mascot />
-        <Timeline />
-        <Task />
-        <Gallery />
-        <Footer />
-      </Suspense>
+      {/* Other Sections */}
+      <About />
+      <Mascot />
+      <Timeline />
+      <Task />
+      <Gallery />
+      <Footer />
     </div>
   );
 };

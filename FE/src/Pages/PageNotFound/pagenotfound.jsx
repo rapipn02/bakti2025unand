@@ -5,7 +5,7 @@ const PageNotFound = () => {
   return (
     <div
       className="h-screen flex flex-col items-center justify-center text-yellow-900 text-center px-4 bg-cover bg-center"
-      style={{ backgroundImage: `url('/background.svg')` }}
+      style={{ backgroundImage: `url('/background.webp')` }}
     >
       <div className="-mt-[10.5rem]">
         <h1 className="text-6xl font-bold mb-4">404</h1>

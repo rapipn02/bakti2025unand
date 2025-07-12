@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import BungaOrnamen from "../../assets/timeline/bunga.svg";
 import MotifBawah from "../../assets/timeline/motifbesar.png";
 
@@ -6,7 +9,7 @@ import MotifBawah from "../../assets/timeline/motifbesar.png";
 const scheduleItems = [
   {
     type: "tabs",
-    dates: ["23 JUL", "27 JUL", "28 JUL"],
+    dates: ["06 AGT", "07 AGT"],
     title: "Ranger Afeksi",
     bgColor: "bg-[#69432A]",
   },
@@ -52,6 +55,10 @@ export const Timeline = () => {
     { top: "75%", right: "8%" },
   ];
 
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
+
   return (
     <section
       id="timeline"
@@ -72,6 +79,7 @@ export const Timeline = () => {
         src={MotifBawah}
         alt="Motif Bawah"
         className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-full max-w-sm sm:max-w-md md:max-w-2xl z-15"
+        data-aos="fade-up"
       />
 
       <div className="relative z-10 flex flex-col items-center gap-8 w-full">
@@ -85,6 +93,7 @@ export const Timeline = () => {
               0 0 10px rgba(0, 0, 0, 0.4)
             `,
           }}
+          data-aos="zoom-in"
         >
           <span>MABA'S</span>
           <br />
@@ -92,7 +101,10 @@ export const Timeline = () => {
         </h1>
 
         {/* Konten */}
-        <div className="relative w-full max-w-[20rem] sm:max-w-[22rem] md:max-w-md">
+        <div
+          className="relative w-full max-w-[20rem] sm:max-w-[22rem] md:max-w-md"
+          data-aos="fade-up"
+        >
           {/* Header background */}
           <div className="absolute top-0 left-[-1rem] right-[-1rem] md:left-[-3.5rem] md:right-[-3.5rem] h-28 rounded-2xl bg-[#69432A]"></div>
 
@@ -102,7 +114,7 @@ export const Timeline = () => {
             <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#623B1C]/60 to-transparent pointer-events-none"></div>
 
             {/* Tabs tanggal */}
-            <div className="relative mb-14 md:mb-16">
+            <div className="relative mb-14 md:mb-16" data-aos="fade-up">
               <div className="flex justify-center gap-8 md:gap-20">
                 {scheduleItems[0].dates.map((date, idx) => (
                   <div key={idx} className="relative">
@@ -114,15 +126,14 @@ export const Timeline = () => {
                         {date.split(" ")[1]}
                       </p>
                     </div>
-                    <div className="absolute bottom sm:bottom-[-1rem] md:bottom-[-1.2rem] left-1/2 -translate-x-1/2 h-5 sm:h-4 md:h-5 w-[10%] sm:w-[30%] md:w-[10%] bg-[#623B1C]"></div>
+                    <div className="absolute bottom sm:bottom-[-1rem] md:bottom-[-1.2rem] left-1/2 -translate-x-1/2 h-6 sm:h-4 md:h-5 w-[14%] sm:w-[30%] md:w-[12%] bg-[#623B1C]"></div>
                   </div>
                 ))}
               </div>
               {/* Garis horizontal */}
-              <div className="absolute -bottom-4 sm:-bottom-4 md:-bottom-5 left-1/2 -translate-x-1/2 h-1  w-[47%] sm:w-[60%] md:w-[64.2%]  bg-[#623B1C]"></div>
-
+              <div className="absolute -bottom-6 sm:-bottom-4 md:-bottom-5 left-1/2 -translate-x-1/2 h-2  w-[25%] sm:w-[60%] md:w-[34%]  bg-[#623B1C]"></div>
               {/* Garis vertikal akhir */}
-              <div className="absolute -bottom-14 sm:-bottom-16 md:-bottom-16 left-1/2 -translate-x-1/2  h-10 sm:h-12 md:h-14 w-1 md:w-[1%] bg-[#623B1C]"></div>
+              <div className="absolute -bottom-14 sm:-bottom-16 md:-bottom-16 left-1/2 -translate-x-1/2  h-10 sm:h-12 md:h-13 w-2 md:w-[3%] bg-[#623B1C]"></div>
             </div>
 
             {/* Konten jadwal */}
@@ -133,6 +144,7 @@ export const Timeline = () => {
                     <div
                       key={idx}
                       className={`${item.bgColor} text-white rounded-lg p-2 sm:p-3 text-center font-['Titan_One']`}
+                      data-aos="fade-up"
                     >
                       <p className="text-sm sm:text-base md:text-lg">
                         {item.title}
@@ -144,6 +156,7 @@ export const Timeline = () => {
                   <div
                     key={idx}
                     className="relative flex w-full bg-[#FBF5E9] rounded-2xl border shadow-md overflow-hidden"
+                    data-aos="fade-up"
                   >
                     <div className="p-2 w-16 sm:w-20 text-center flex-shrink-0 font-['League_Spartan'] flex flex-col justify-center">
                       <p className="font-bold text-lg sm:text-xl md:text-2xl text-[#623B1C]">

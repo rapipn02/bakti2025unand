@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import DilloImage from "../../assets/maskot/dillonew.png";
 import Ronand from "../../assets/maskot/ronand.svg";
 import MendungImg1 from "../../assets/maskot/mendung.svg";
@@ -89,8 +92,8 @@ const MascotSlider = ({
   return (
     <div
       className={`relative ${containerClassName} flex flex-col items-center`}
+      data-aos="zoom-in"
     >
-      {/* Tombol panah sesuai variant */}
       {variant === "desktop" ? (
         <>
           <SliderArrowDesktop onClick={prev} left />
@@ -102,7 +105,6 @@ const MascotSlider = ({
           <SliderArrowMobile onClick={next} />
         </>
       )}
-      {/* Maskot */}
       <img
         key={index}
         src={maskots[index].src}
@@ -110,7 +112,6 @@ const MascotSlider = ({
         className="w-full h-auto rounded-2xl transition-opacity duration-500 object-contain"
         style={{ maxHeight: 600 }}
       />
-      {/* Indikator bulat */}
       <div className="flex mt-0 space-x-2 z-10">
         {maskots.map((_, i) => (
           <span
@@ -132,7 +133,7 @@ const DescriptionBox = ({
   titleClassName,
   children,
 }) => (
-  <div className={containerClassName}>
+  <div className={containerClassName} data-aos="fade-up">
     <div className="absolute -top-7 sm:-top-8 lg:-top-9 left-1/2 transform -translate-x-1/2 w-max text-center z-20">
       <div
         className={titleClassName}
@@ -235,6 +236,10 @@ const MobileView = () => {
 // Komponen Utama
 export const Mascot = () => {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
 
   return (
     <section

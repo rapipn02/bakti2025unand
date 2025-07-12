@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 // Import semua aset gambar
 import RnB from "../../assets/gallery/rnb.png";
@@ -29,7 +31,7 @@ const bungaPositions = [
   { top: "50%", right: "2%" },
 ];
 
-// Data untuk galeri
+// Data galeri
 const galleryImages = [
   {
     id: 1,
@@ -88,7 +90,7 @@ const galleryImages = [
   },
 ];
 
-// Komponen slideshow dengan fade smooth
+// SlideshowImage tetap sama
 const SlideshowImage = ({ slides }) => {
   const [index, setIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
@@ -99,7 +101,7 @@ const SlideshowImage = ({ slides }) => {
     const interval = setInterval(() => {
       setPrevIndex(index);
       setIndex((prev) => (prev + 1) % slides.length);
-    }, 1000); // Lebih lama biar smooth
+    }, 1000);
     return () => clearInterval(interval);
   }, [hovered, index, slides.length]);
 
@@ -113,7 +115,6 @@ const SlideshowImage = ({ slides }) => {
         setPrevIndex(0);
       }}
     >
-      {/* Gambar sebelumnya */}
       <img
         src={slides[prevIndex]}
         alt=""
@@ -133,7 +134,6 @@ const SlideshowImage = ({ slides }) => {
               : "center",
         }}
       />
-      {/* Gambar sekarang */}
       <img
         src={slides[index]}
         alt=""
@@ -161,11 +161,16 @@ const SlideshowImage = ({ slides }) => {
 };
 
 export const Gallery = () => {
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
+
   return (
     <section
       id="gallery"
       className="min-h-screen w-full bg-[#F6EDDD] pt-20 pb-16 px-5 md:px-10 cursor-pointer"
       style={{ position: "relative" }}
+     
     >
       {/* Render bunga ornamen */}
       {bungaPositions.map((pos, idx) => (
@@ -182,19 +187,24 @@ export const Gallery = () => {
             ...pos,
             zIndex: 1,
           }}
+          data-aos="fade"
         />
       ))}
 
-      {/* Title di atas foto inti */}
-      <div className="flex justify-center mb-3">
+      {/* Title */}
+      <div className="flex justify-center mb-4" data-aos="zoom-in">
         <img
           src={Title}
           alt="BAKTI UNAND 2025 PRESENT"
-          style={{ maxWidth: 600, width: "100%" }}
+          style={{ maxWidth: 700, width: "100%" }}
         />
       </div>
 
-      <div className="flex flex-col gap-10 md:grid md:grid-cols-4 md:grid-rows-[repeat(10,10vw)] md:gap-4 max-w-7xl mx-auto">
+      {/* Gallery grid */}
+      <div
+        className="flex flex-col gap-10 md:grid md:grid-cols-4 md:grid-rows-[repeat(10,10vw)] md:gap-4 max-w-7xl mx-auto"
+        data-aos="fade-up"
+      >
         {galleryImages.map((image) => (
           <div
             key={image.id}
@@ -208,6 +218,7 @@ export const Gallery = () => {
                 ? { position: "relative", minHeight: "100%" }
                 : undefined
             }
+            data-aos="zoom-in"
           >
             {image.slides ? (
               <SlideshowImage slides={image.slides} />
@@ -222,13 +233,13 @@ export const Gallery = () => {
                     : image.alt === "Konsumsi"
                     ? { objectPosition: "center 65%" }
                     : image.alt === "Acara"
-                    ? { objectPosition: "center 100%" } // Atur sesuai kebutuhan
+                    ? { objectPosition: "center 100%" }
                     : image.alt === "Perlengkapan"
-                    ? { objectPosition: "center 85%" } // Atur sesuai kebutuhan
+                    ? { objectPosition: "center 85%" }
                     : image.alt === "Inti"
-                    ? { objectPosition: "center 60%" } // Atur sesuai kebutuhan
+                    ? { objectPosition: "center 60%" }
                     : image.alt === "MNG"
-                    ? { objectPosition: "center 80%" } // Atur sesuai kebutuhan
+                    ? { objectPosition: "center 80%" }
                     : undefined
                 }
               />
