@@ -170,7 +170,6 @@ export const Gallery = () => {
       id="gallery"
       className="min-h-screen w-full bg-[#F6EDDD] pt-20 pb-16 px-5 md:px-10 cursor-pointer"
       style={{ position: "relative" }}
-     
     >
       {/* Render bunga ornamen */}
       {bungaPositions.map((pos, idx) => (
@@ -201,61 +200,61 @@ export const Gallery = () => {
       </div>
 
       {/* Gallery grid */}
-      <div
-        className="flex flex-col gap-10 md:grid md:grid-cols-4 md:grid-rows-[repeat(10,10vw)] md:gap-4 max-w-7xl mx-auto"
-        data-aos="fade-up"
-      >
-        {galleryImages.map((image) => (
-          <div
-            key={image.id}
-            className={`
+      <div data-aos="fade-up">
+        <div data-aos="zoom-in">
+          <div className="flex flex-col gap-10 md:grid md:grid-cols-4 md:grid-rows-[repeat(10,10vw)] md:gap-4 max-w-7xl mx-auto">
+            {galleryImages.map((image) => (
+              <div
+                key={image.id}
+                className={`
               relative overflow-hidden rounded-2xl shadow-xl 
               transition-all duration-300 ease-in-out hover:scale-102 hover:shadow-2xl
               h-[250px] md:h-auto ${image.gridClass} group
             `}
-            style={
-              image.alt === "MIT"
-                ? { position: "relative", minHeight: "100%" }
-                : undefined
-            }
-            data-aos="zoom-in"
-          >
-            {image.slides ? (
-              <SlideshowImage slides={image.slides} />
-            ) : (
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover"
                 style={
                   image.alt === "MIT"
-                    ? { objectPosition: "center 65%" }
-                    : image.alt === "Konsumsi"
-                    ? { objectPosition: "center 65%" }
-                    : image.alt === "Acara"
-                    ? { objectPosition: "center 100%" }
-                    : image.alt === "Perlengkapan"
-                    ? { objectPosition: "center 85%" }
-                    : image.alt === "Inti"
-                    ? { objectPosition: "center 60%" }
-                    : image.alt === "MNG"
-                    ? { objectPosition: "center 80%" }
+                    ? { position: "relative", minHeight: "100%" }
                     : undefined
                 }
-              />
-            )}
+              >
+                {image.slides ? (
+                  <SlideshowImage slides={image.slides} />
+                ) : (
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover"
+                    style={
+                      image.alt === "MIT"
+                        ? { objectPosition: "center 65%" }
+                        : image.alt === "Konsumsi"
+                        ? { objectPosition: "center 65%" }
+                        : image.alt === "Acara"
+                        ? { objectPosition: "center 100%" }
+                        : image.alt === "Perlengkapan"
+                        ? { objectPosition: "center 85%" }
+                        : image.alt === "Inti"
+                        ? { objectPosition: "center 60%" }
+                        : image.alt === "MNG"
+                        ? { objectPosition: "center 80%" }
+                        : undefined
+                    }
+                  />
+                )}
 
-            <div
-              className="
+                <div
+                  className="
                 absolute inset-x-0 bottom-0 w-full p-3 text-center text-[#F6EDDD] font-['Titan_One'] text-ultrabold bg-black/60
                 opacity-0 translate-y-full group-hover:opacity-100 group-hover:translate-y-0
                 transition-all duration-300 ease-in-out
               "
-            >
-              {image.alt}
-            </div>
+                >
+                  {image.alt}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import BackgroundImage from "/background.webp";
-const HomeMobile = "/baktiunandmobile.webp";
+import HomeMobile from "/baktiunandmobile.webp";
 import Awan from "/awanfull.svg";
 import Navbar from "../../component/Navbar";
 import About from "./about";
@@ -123,16 +123,15 @@ const Home = () => {
         />
 
         {/* Get Started Button for Desktop */}
-        <div
-          data-aos="zoom-in"
-          className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[75px] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
-        >
-          <a
-            href="/login"
-            className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
-          >
-            Get Started
-          </a>
+        <div data-aos="zoom-in">
+          <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 -bottom-[310px] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-15 items-center justify-center duration-300 ease-in-out hover:scale-105 cursor-pointer transition-transform will-change-transform">
+            <a
+              href="/login"
+              className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+            >
+              Get Started
+            </a>
+          </div>
         </div>
 
         {/* Get Started Button for Mobile */}
