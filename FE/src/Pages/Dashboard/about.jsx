@@ -136,7 +136,7 @@ export const About = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16">
           {/* Card 1 (Padding & perataan teks diubah) */}
           <div data-aos="fade-up">
-            <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-transform flex flex-col">
+            <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 hover:scale-[1.03] cursor-pointer transition-transform flex flex-col min-h-[340px]">
               <a
                 href="https://drive.google.com/drive/folders/1SKDoS__cBn8QZnm1Hh2RRT9S92ZhAuRj"
                 target="_blank"
@@ -173,7 +173,7 @@ export const About = () => {
 
           {/* Card 2 */}
           <div data-aos="fade-up">
-            <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 ease-in-out hover:scale-[1.03] cursor-pointer transition-transform flex flex-col">
+            <div className="bg-[#F6EDDD] w-full rounded-xl p-8 shadow-md border-[3px] border-yellow-900 duration-300 ease-in-out hover:scale-[1.03] cursor-pointer transition-transform flex flex-col min-h-[340px]">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6 h-full">
                 <img
                   className="w-full md:w-[220px] h-auto object-contain flex-shrink-0"
@@ -204,7 +204,7 @@ export const About = () => {
 
           {/* Card 3 */}
           <div data-aos="fade-up">
-            <div className="will-change-transform bg-[#F6EDDD] w-full rounded-xl p-12 shadow-md border-[3px] border-yellow-900 duration-300 ease-in-out hover:scale-[1.03] cursor-pointer transition-transform flex flex-col">
+            <div className="will-change-transform bg-[#F6EDDD] w-full rounded-xl p-12 pb-16 shadow-md border-[3px] border-yellow-900 duration-300 ease-in-out hover:scale-[1.03] cursor-pointer transition-transform flex flex-col min-h-[300px]">
               <a
                 href="https://drive.google.com/drive/folders/1SN_yUY4aGT-lcp1_NIgGAE9GvG-RTRmY"
                 target="_blank"
@@ -242,7 +242,7 @@ export const About = () => {
 
           {/* Card 4 */}
           <div data-aos="fade-up">
-            <div className="will-change-transform bg-[#F6EDDD] w-full rounded-xl p-6 shadow-md border-[3px] border-yellow-900 duration-300 ease-in-out hover:scale-[1.03] cursor-pointer transition-transform flex flex-col">
+            <div className="will-change-transform bg-[#F6EDDD] w-full rounded-xl p-6 shadow-md border-[3px] border-yellow-900 duration-300 ease-in-out hover:scale-[1.03] cursor-pointer transition-transform flex flex-col min-h-[340px]">
               <a
                 href="https://drive.google.com/drive/folders/1SS-WReEqfOxpZfYqvqHrsh7YXF8DKR3M"
                 target="_blank"
