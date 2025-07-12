@@ -3,20 +3,20 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 // Import semua aset gambar
-import RnB from "../../assets/gallery/rnb.png";
-import MIT from "../../assets/gallery/mit.jpg";
-import MIT1 from "../../assets/gallery/mit1.jpg";
-import MIT2 from "../../assets/gallery/mit2.jpg";
-import MIT3 from "../../assets/gallery/mit3.jpg";
-import MIT4 from "../../assets/gallery/mit4.jpg";
-import MIT5 from "../../assets/gallery/mit5.jpg";
-import INTI from "../../assets/gallery/Inti.jpg";
-import COFAS from "../../assets/gallery/cofas.jpg";
-import ACARA from "../../assets/gallery/acara.jpg";
-import KESTARI from "../../assets/gallery/kestari.jpg";
-import KONSUM from "../../assets/gallery/konsumsi.jpg";
-import PERLE from "../../assets/gallery/perle.jpg";
-import MNG from "../../assets/gallery/mng.jpg";
+import RnB from "../../assets/gallery/rnb.webp";
+import MIT from "../../assets/gallery/mit.webp";
+import MIT1 from "../../assets/gallery/mit1.webp";
+import MIT2 from "../../assets/gallery/mit2.webp";
+import MIT3 from "../../assets/gallery/mit3.webp";
+import MIT4 from "../../assets/gallery/mit4.webp";
+import MIT5 from "../../assets/gallery/mit5.webp";
+import INTI from "../../assets/gallery/Inti.webp";
+import COFAS from "../../assets/gallery/cofas.webp";
+import ACARA from "../../assets/gallery/acara.webp";
+import KESTARI from "../../assets/gallery/kestari.webp";
+import KONSUM from "../../assets/gallery/konsumsi.webp";
+import PERLE from "../../assets/gallery/perle.webp";
+import MNG from "../../assets/gallery/mng.webp";
 import BungaOrnamen from "../../assets/timeline/bunga.svg";
 import Title from "../../assets/gallery/title.svg";
 
