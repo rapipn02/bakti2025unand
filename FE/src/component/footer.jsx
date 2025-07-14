@@ -154,11 +154,18 @@ const Footer = () => {
         {/* Garis bawah */}
         <hr className="my-5 border-white/30" />
         <div className="flex flex-wrap items-center justify-center gap-3 px-4">
-          <img
-            src={Neo}
-            alt="NeoTelemetri"
-            className="h-10 max-w-full  object-contain"
+        <a
+            href="https://neotelemetri.id/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={Neo}
+              alt="NeoTelemetri"
+              className="h-10 max-w-full object-contain cursor-pointer"
           />
+                    </a>
+
           <p className="text-sm text-white whitespace-nowrap">
             © 2025 MIT Bakti Unand. All Rights Reserved
           </p>
