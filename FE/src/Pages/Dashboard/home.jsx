@@ -15,6 +15,7 @@ import Loading from "../../component/loading";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const hasLoaded = sessionStorage.getItem("hasLoadedInSession");
@@ -34,6 +35,20 @@ const Home = () => {
       duration: 1000,
       once: false, // ⚠️ set to false agar animasi muncul berulang kali saat scroll
     });
+
+    // Cek status login dari API
+    fetch('/api/auth/check', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        setIsLoggedIn(data.loggedIn === true);
+      })
+      .catch(() => setIsLoggedIn(false));
   }, []);
 
   if (loading) {
@@ -123,29 +138,33 @@ const Home = () => {
         />
 
         {/* Get Started Button for Desktop */}
-        <div data-aos="zoom-in">
-          <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[-31vh] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 ease-in-out hover:scale-105 cursor-pointer transition-transform will-change-transform">
+        {!isLoggedIn && (
+          <div data-aos="zoom-in">
+            <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[-31vh] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 ease-in-out hover:scale-105 cursor-pointer transition-transform will-change-transform">
+              <a
+                href="/login"
+                className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+              >
+                Get Started
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Get Started Button for Mobile */}
+        {!isLoggedIn && (
+          <div
+            data-aos="zoom-in"
+            className="flex lg:hidden relative mt-0 ml-auto mr-23 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
+          >
             <a
               href="/login"
-              className="text-white text-2xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+              className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
             >
               Get Started
             </a>
           </div>
-        </div>
-
-        {/* Get Started Button for Mobile */}
-        <div
-          data-aos="zoom-in"
-          className="flex lg:hidden relative mt-0 ml-auto mr-23 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
-        >
-          <a
-            href="/login"
-            className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
-          >
-            Get Started
-          </a>
-        </div>
+        )}
       </section>
 
       {/* Other Sections */}
