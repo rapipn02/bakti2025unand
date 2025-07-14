@@ -190,7 +190,7 @@ export const About = () => {
             `,
                     }}
                   >
-                    Maba will get cool mentors
+                    Maba Wll Get Cool Mentors
                   </h3>
                   <p className="font-bold">
                     Mahasiswa atau mahasiswi baru akan didampingi uda uni mentor
