@@ -99,26 +99,39 @@ const Home = () => {
           <div className="text-8xl font-normal mt-2">2025</div>
         </div>
 
-        {/* Mobile Heading */}
-        <div
-          data-aos="zoom-in"
-          className="block lg:hidden relative w-full max-w-4xl mx-auto mt-6 text-[#623B1C] font-['Carena'] text-center z-10"
-          style={{
-            textShadow: `
-              -2px -2px 0 white,
-              2px -2px 0 white,
-              -2px 2px 0 white,
-              2px 2px 0 white,
-              0 0 10px rgba(0, 0, 0, 0.5),
-              0 0 15px rgba(0, 0, 0, 0.4)
-            `,
-          }}
-        >
-          <div className="text-3xl font-normal mt-34 ml-[6rem]">
-            BAKTI UNAND
-          </div>
-          <div className="text-4xl font-normal mt-2 ml-[6rem]">2025</div>
-        </div>
+       {/* Mobile Heading + Get Started Button */}
+<div
+  data-aos="zoom-in"
+  className="block lg:hidden relative w-full max-w-4xl mx-auto mt-6 text-[#623B1C] font-['Carena'] text-center z-10 flex flex-col items-center"
+  style={{
+    textShadow: `
+      -2px -2px 0 white,
+      2px -2px 0 white,
+      -2px 2px 0 white,
+      2px 2px 0 white,
+      0 0 10px rgba(0, 0, 0, 0.5),
+      0 0 15px rgba(0, 0, 0, 0.4)
+    `,
+  }}
+>
+  <div className="text-3xl font-normal mt-34">
+    BAKTI UNAND
+  </div>
+  <div className="text-4xl font-normal mt-2">2025</div>
+  {/* Get Started Button for Mobile */}
+  {!isAuthenticated && (
+    <div
+      className="flex mt-6 mx-auto w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
+    >
+      <a
+        href="/login"
+        className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
+      >
+        Get Started
+      </a>
+    </div>
+  )}
+</div>
 
         {/* Awan untuk Desktop */}
         <img
@@ -160,20 +173,7 @@ const Home = () => {
           </div>
         )}
 
-        {/* Get Started Button for Mobile */}
-        {!isAuthenticated && (
-          <div
-            data-aos="zoom-in"
-            className="flex lg:hidden relative mt-0 ml-auto mr-23 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
-          >
-            <a
-              href="/login"
-              className="text-white text-xl font-bold font-['Poppins'] [text-shadow:_0px_3px_5px_rgb(0_0_0_/_0.25)]"
-            >
-              Get Started
-            </a>
-          </div>
-        )}
+        
       </section>
 
       {/* Other Sections */}
