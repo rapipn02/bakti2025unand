@@ -1,2 +1,9 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Carena';
+  /* Perintah ini memberitahu browser untuk MENGAMBIL file dari lokasi ini */
+  src: url('./assets/fonts/Carena-Regular.woff2') format('woff2'); 
+  font-weight: normal;
+  font-style: normal;
+}
