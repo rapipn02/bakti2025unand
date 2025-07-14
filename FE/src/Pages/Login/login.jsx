@@ -99,7 +99,7 @@ export const Login = () => {
               `,
             }}
           >
-            Masuk disini
+            Masuk Disini
             <div className="w-full h-1 bg-yellow-900 mx-auto mt-4" />
           </div>
 

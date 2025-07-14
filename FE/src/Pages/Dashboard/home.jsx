@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../hooks/useAuth.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -18,6 +18,30 @@ import Loading from "../../component/loading";
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const footerRef = useRef(null);
+  // Scroll to top handler
+  const handleScrollTop = () => {
+    const hero = document.getElementById('home');
+    if (hero) {
+      hero.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Show button if footer is visible
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!footerRef.current) return;
+      const rect = footerRef.current.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      setShowScrollTop(isVisible);
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const hasLoaded = sessionStorage.getItem("hasLoadedInSession");
@@ -158,7 +182,21 @@ const Home = () => {
       <Timeline />
       <Task />
       <Gallery />
-      <Footer />
+      <div ref={footerRef}>
+        <Footer />
+      </div>
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={handleScrollTop}
+          className="fixed bottom-8 right-8 z-50 bg-[#623B1C] text-white p-4 rounded-full shadow-lg hover:bg-[#4e2e13] transition-all duration-300  border-2 border-[#c78317] cursor-pointer"
+          aria-label="Kembali ke atas"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-7 h-7">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };

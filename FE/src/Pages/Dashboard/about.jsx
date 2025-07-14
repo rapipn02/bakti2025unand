@@ -107,7 +107,7 @@ export const About = () => {
         {/*  Scroll ke detail */}
         <div data-aos="zoom-in">
           <a
-            href="..."
+            href="https://bit.ly/BukuPanduanMahasiwaBaruUnand2025"
             target="_blank"
             rel="noopener noreferrer"
             className="will-change-transform w-[350px] h-[50px] px-9 py-3 bg-[#623B1C] rounded-[20px] shadow-[0px_5px_6px_0px_rgba(0,0,0,0.25)] flex justify-center items-center gap-2 z-10 mt-8 relative text-orange-100 text-2xl font-bold font-['League_Spartan'] duration-300 hover:scale-110 transition-transform cursor-pointer"
