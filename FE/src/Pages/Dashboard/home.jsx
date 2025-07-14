@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../../hooks/useAuth.jsx";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import BackgroundImage from "/background.webp";
@@ -13,13 +14,13 @@ import Gallery from "./gallery";
 import Footer from "../../component/footer";
 import Loading from "../../component/loading";
 
+
 const Home = () => {
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const hasLoaded = sessionStorage.getItem("hasLoadedInSession");
-
     if (!hasLoaded) {
       const timer = setTimeout(() => {
         setLoading(false);
@@ -29,29 +30,13 @@ const Home = () => {
     } else {
       setLoading(false);
     }
-
-    // Inisialisasi AOS agar animasi selalu muncul saat elemen masuk viewport
     AOS.init({
       duration: 1000,
-      once: false, // ⚠️ set to false agar animasi muncul berulang kali saat scroll
+      once: false,
     });
-
-    // Cek status login dari API
-    fetch('/api/auth/check', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        setIsLoggedIn(data.loggedIn === true);
-      })
-      .catch(() => setIsLoggedIn(false));
   }, []);
 
-  if (loading) {
+  if (loading || authLoading) {
     return <Loading />;
   }
 
@@ -138,7 +123,7 @@ const Home = () => {
         />
 
         {/* Get Started Button for Desktop */}
-        {!isLoggedIn && (
+        {!isAuthenticated && (
           <div data-aos="zoom-in">
             <div className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 bottom-[-31vh] w-[215px] h-[52px] bg-[rgba(98,59,28,0.8)] rounded-[18px] border-2 border-orange-100 z-10 items-center justify-center duration-300 ease-in-out hover:scale-105 cursor-pointer transition-transform will-change-transform">
               <a
@@ -152,7 +137,7 @@ const Home = () => {
         )}
 
         {/* Get Started Button for Mobile */}
-        {!isLoggedIn && (
+        {!isAuthenticated && (
           <div
             data-aos="zoom-in"
             className="flex lg:hidden relative mt-0 ml-auto mr-23 w-[150px] h-[48px] bg-[rgba(98,59,28,0.8)] rounded-[22px] border-5 border-[#F6EDDD] z-10 items-center justify-center duration-300 hover:scale-105 cursor-pointer"
