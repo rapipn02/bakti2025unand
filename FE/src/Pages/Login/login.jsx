@@ -5,8 +5,8 @@ import toast from 'react-hot-toast';
 import GoogleLoginButton from "../../components/GoogleLoginButton";
 
 // Path gambar Anda
-import backgroundLogin from "../../assets/Login/newlogin.svg";
-import RumahGadang from "../../assets/Login/rumahgadang.svg";
+import backgroundLogin from "../../assets/Login/newlogin.webp";
+import RumahGadang from "../../assets/Login/rumahgadang.webp";
 import GoogleLogo from "../../assets/Login/Google.svg";
 import BaktiUnandLogo from "../../assets/Login/Bakti.svg";
 import Rumahgadangmobile from "../../assets/Login/BAKTI UNAND 2025 kiri.svg";

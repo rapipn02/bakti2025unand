@@ -38,7 +38,7 @@ export const AddTugas = () => {
       const hour = String(formData.deadlineHour).padStart(2, '0');
       const minute = String(formData.deadlineMinute).padStart(2, '0');
       const localDate = new Date(formData.deadline + 'T' + hour + ':' + minute + ':00');
-      localDate.setHours(localDate.getHours() - 7);
+      localDate.setHours(localDate.getHours());
       deadlineISO = localDate.toISOString();
     } else {
       // Jika tidak ada jam, asumsikan jam 00:00 WIB
