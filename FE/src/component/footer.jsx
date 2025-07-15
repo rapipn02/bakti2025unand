@@ -155,7 +155,7 @@ const Footer = () => {
         <hr className="my-5 border-white/30" />
         <div className="flex flex-wrap items-center justify-center gap-3 px-4">
         <a
-            href="https://neotelemetri.id/"
+            href="https://www.instagram.com/neotelemetri/?hl=id"
             target="_blank"
             rel="noopener noreferrer"
           >
