@@ -264,7 +264,7 @@ export const About = () => {
               `,
                       }}
                     >
-                      UKM dan HIMADA
+                      UKM Dan HIMADA
                       <br />
                       Universitas Andalas
                     </h3>
