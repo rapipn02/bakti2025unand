@@ -92,7 +92,7 @@ export const About = () => {
           BAKTI atau Bimbingan Aktivitas Kemahasiswaan dalam Tradisi Ilmiah
           adalah kegiatan pengenalan terhadap program pendidikan, tradisi ilmiah
           dan pembinaan kegiatan kemahasiswaan di perguruan tinggi bagi
-          mahasiswa baru Universitas Andalas. BAKTI UNAND menghadirkan
+          mahasiswa baru Universitas Andalas.BAKTI UNAND menghadirkan
           serangkaian kegiatan yang bertujuan untuk mengenalkan lingkungan
           kampus kepada mahasiswa baru Universitas Andalas.
         </h2>
