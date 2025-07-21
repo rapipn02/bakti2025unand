@@ -6,16 +6,6 @@ import { getTugasList, submitTugas, editKumpulTugas } from "../../utils/tugasApi
 import { getKelompokList } from "../../utils/kelompokApi";
 import { jwtDecode } from "jwt-decode";
 
-// Dummy data kelompokList untuk development/testing
-const dummyKelompokList = [
-  { id: 1, nomor: 1 },
-  { id: 2, nomor: 2 },
-  { id: 3, nomor: 3 },
-  { id: 4, nomor: 4 },
-  { id: 5, nomor: 5 },
-  { id: 6, nomor: 6 }
-];
-
 // Helper untuk memformat tanggal deadline
 const formatDeadline = (date) => {
   if (!date) return "-";
@@ -160,7 +150,7 @@ export const Pengumpulantugas = () => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [kelompokList, setKelompokList] = useState(dummyKelompokList);
+  const [kelompokList, setKelompokList] = useState([]);
   const [userId, setUserId] = useState(null);
 
   // 1. useEffect untuk mendapatkan userId dari token saat komponen pertama kali dimuat
@@ -190,34 +180,42 @@ export const Pengumpulantugas = () => {
       setLoading(true);
       setError("");
       
-      const [tugasResult, kelompokResult] = await Promise.all([
-        getTugasList(),
-        getKelompokList()
-      ]);
+      try {
+        const [tugasResult, kelompokResult] = await Promise.all([
+          getTugasList(),
+          getKelompokList()
+        ]);
 
-      if (tugasResult.success) {
-        const processedTasks = tugasResult.data.map((t) => {
-          const userSubmission = t.Kumpul_Tugas.find(sub => sub.id_user === userId);
-          const hasSubmitted = !!userSubmission;
-          return {
-            id: t.id,
-            title: t.title,
-            deadline: t.deadline ? formatDeadline(t.deadline) : "-",
-            deadlineDate: t.deadline ? new Date(t.deadline) : null,
-            description: t.description || "",
-            hasSubmitted,
-            Kumpul_Tugas: userSubmission ? [userSubmission] : [],
-          };
-        });
-        setTasks(processedTasks);
-      } else {
-        setError(tugasResult.error || "Gagal memuat tugas");
+        if (tugasResult.success) {
+          const processedTasks = tugasResult.data.map((t) => {
+            const userSubmission = t.Kumpul_Tugas.find(sub => sub.id_user === userId);
+            const hasSubmitted = !!userSubmission;
+            return {
+              id: t.id,
+              title: t.title,
+              deadline: t.deadline ? formatDeadline(t.deadline) : "-",
+              deadlineDate: t.deadline ? new Date(t.deadline) : null,
+              description: t.description || "",
+              hasSubmitted,
+              Kumpul_Tugas: userSubmission ? [userSubmission] : [],
+            };
+          });
+          setTasks(processedTasks);
+        } else {
+          setError(tugasResult.error || "Gagal memuat tugas");
+        }
+
+        if (kelompokResult.success) {
+          setKelompokList(kelompokResult.data);
+        } else {
+          setError(prev => prev ? `${prev}. Gagal memuat kelompok` : "Gagal memuat kelompok");
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Terjadi kesalahan saat memuat data");
+      } finally {
+        setLoading(false);
       }
-
-      // Jika ingin fetch dari backend, bisa gunakan useEffect seperti sebelumnya
-      // useEffect(() => { setKelompokList(dummyKelompokList); }, []);
-
-      setLoading(false);
     };
 
     fetchAllData();
