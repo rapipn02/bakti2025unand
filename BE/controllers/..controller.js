@@ -438,64 +438,12 @@ exports.SearchGetKumpulTugasByKelompok = async (req, res) => {
         })
     }
 }
+
 exports.KumpulTugas = async (req, res) => {
     try {
         const { id_user, id_tugas, nama, nim, kelompok, link_tugas } = req.body;
 
-        // Debug logging untuk tracking
-        console.log("=== KUMPUL TUGAS DEBUG ===");
-        console.log("Request body:", req.body);
-        console.log("Kelompok value:", kelompok, "Type:", typeof kelompok);
-
-        // 1. VALIDASI INPUT - Cek semua field required
-        const requiredFields = { id_user, id_tugas, nama, nim, kelompok, link_tugas };
-        const missingFields = [];
-
-        for (const [key, value] of Object.entries(requiredFields)) {
-            if (value === undefined || value === null || value === '') {
-                missingFields.push(key);
-            }
-        }
-
-        if (missingFields.length > 0) {
-            console.log("Missing fields:", missingFields);
-            return res.status(400).json({
-                status: 400,
-                message: `Field berikut wajib diisi: ${missingFields.join(', ')}`,
-                missing_fields: missingFields
-            });
-        }
-
-        // 2. KONVERSI TIPE DATA - Pastikan kelompok adalah integer
-        const kelompokInt = parseInt(kelompok);
-        if (isNaN(kelompokInt)) {
-            console.log("Invalid kelompok format:", kelompok);
-            return res.status(400).json({
-                status: 400,
-                message: "Kelompok harus berupa angka yang valid",
-                received_kelompok: kelompok
-            });
-        }
-        console.log("Kelompok converted:", kelompokInt);
-
-        // 3. VALIDASI KELOMPOK EXISTS - Cek kelompok ada di database
-        const existingKelompok = await prisma.Kelompok.findFirst({
-            where: { 
-                nomor: kelompokInt // ✅ FIXED: Gunakan 'nomor' sesuai schema
-            }
-        });
-
-        if (!existingKelompok) {
-            console.log("Kelompok not found:", kelompokInt);
-            return res.status(404).json({
-                status: 404,
-                message: `Kelompok ${kelompokInt} tidak ditemukan atau tidak tersedia`,
-                kelompok_searched: kelompokInt
-            });
-        }
-        console.log("Kelompok found:", existingKelompok);
-
-        // 4. Cek apakah user sudah pernah mengumpulkan tugas ini sebelumnya
+        // Cek apakah user sudah pernah mengumpulkan tugas ini sebelumnya
         const existingSubmission = await prisma.Kumpul_Tugas.findFirst({
             where: {
                 id_user,
@@ -504,72 +452,45 @@ exports.KumpulTugas = async (req, res) => {
         });
 
         if (existingSubmission) {
-            console.log("Duplicate submission found:", existingSubmission.id);
-            return res.status(409).json({
+            return res.status(409).json({ // 409 Conflict is a good status code for this
                 status: 409,
                 message: "Anda sudah pernah mengumpulkan tugas ini.",
-                existing_submission_id: existingSubmission.id
             });
         }
 
-        // 5. Ambil data tugas untuk cek deadline
-        const tugas = await prisma.Tugas.findUnique({ 
-            where: { id: id_tugas },
-            select: { id: true, title: true, deadline: true } // ✅ FIXED: Gunakan 'title' sesuai schema
-        });
-
+        // Ambil data tugas untuk cek deadline
+        const tugas = await prisma.Tugas.findUnique({ where: { id: id_tugas } });
         if (!tugas) {
-            console.log("Tugas not found:", id_tugas);
             return res.status(404).json({
                 status: 404,
-                message: "Tugas tidak ditemukan.",
-                tugas_id: id_tugas
+                message: "Tugas tidak ditemukan."
             });
         }
-
-        console.log("Tugas found:", tugas);
-
-        // Cek deadline
         if (tugas.deadline && new Date() > new Date(tugas.deadline)) {
-            console.log("Deadline passed. Current:", new Date(), "Deadline:", tugas.deadline);
             return res.status(400).json({
                 status: 400,
-                message: "Pengumpulan tugas sudah melewati deadline. Tidak dapat submit lagi.",
-                deadline: tugas.deadline,
-                current_time: new Date()
+                message: "Pengumpulan tugas sudah melewati deadline. Tidak dapat submit lagi."
             });
         }
 
-        // 6. Create data dengan kelompok yang sudah dikonversi
         const data = await prisma.Kumpul_Tugas.create({
             data: {
                 id_user,
                 id_tugas,
-                nama: nama.trim(), // Trim whitespace
-                nim: nim.trim(),
-                kelompok: kelompokInt, // Gunakan integer
-                link_tugas: link_tugas.trim(),
-                createAt: new Date(), // ✅ FIXED: Gunakan 'createAt' sesuai schema
-                updateAt: new Date()  // ✅ FIXED: Gunakan 'updateAt' sesuai schema
+                nama,
+                nim,
+                kelompok,
+                link_tugas
             }
         });
 
-        console.log("Tugas berhasil dikumpulkan:", data);
-
         if (data) {
-            return res.status(201).json({ // 201 untuk created
-                status: 201,
+            return res.status(200).json({
+                status: 200,
                 message: "Berhasil mengumpulkan tugas",
-                data: {
-                    ...data,
-                    tugas_info: {
-                        title: tugas.title, // ✅ FIXED: Gunakan 'title' sesuai schema
-                        deadline: tugas.deadline
-                    }
-                }
+                data
             });
         } else {
-            console.log("Create failed but no error thrown");
             return res.status(400).json({
                 status: 400,
                 message: "Gagal mengumpulkan tugas"
@@ -577,209 +498,44 @@ exports.KumpulTugas = async (req, res) => {
         }
 
     } catch (error) {
-        console.error("=== KUMPUL TUGAS ERROR ===");
-        console.error("Error message:", error.message);
-        console.error("Error stack:", error.stack);
-        console.error("Request body:", req.body);
-        
-        // Handle specific Prisma errors
-        if (error.code === 'P2002') {
-            return res.status(409).json({
-                status: 409,
-                message: "Data duplikat: Kombinasi user dan tugas sudah ada",
-                error_code: error.code
-            });
-        }
-        
-        if (error.code === 'P2003') {
-            return res.status(400).json({
-                status: 400,
-                message: "Data referensi tidak valid (Foreign key constraint)",
-                error_code: error.code
-            });
-        }
-
+        console.log("Kumpul Tugas Controller Error:", error);
         return res.status(500).json({
             status: 500,
             message: "Internal Server Error",
-            error_message: error.message,
-            timestamp: new Date()
+            error
         });
     }
 };
-
 exports.EditKumpulTugas = async (req, res) => {
     try {
         const { id, nama, nim, kelompok, link_tugas } = req.body;
 
-        // Debug logging untuk tracking
-        console.log("=== EDIT KUMPUL TUGAS DEBUG ===");
-        console.log("Request body:", req.body);
-        console.log("Kelompok value:", kelompok, "Type:", typeof kelompok);
-
-        // 1. VALIDASI INPUT - Cek semua field required
-        const requiredFields = { id, nama, nim, kelompok, link_tugas };
-        const missingFields = [];
-
-        for (const [key, value] of Object.entries(requiredFields)) {
-            if (value === undefined || value === null || value === '') {
-                missingFields.push(key);
-            }
-        }
-
-        if (missingFields.length > 0) {
-            console.log("Missing fields:", missingFields);
-            return res.status(400).json({
-                status: 400,
-                message: `Field berikut wajib diisi: ${missingFields.join(', ')}`,
-                missing_fields: missingFields
-            });
-        }
-
-        // 2. KONVERSI TIPE DATA - Pastikan kelompok adalah integer
-        const kelompokInt = parseInt(kelompok);
-        if (isNaN(kelompokInt)) {
-            console.log("Invalid kelompok format:", kelompok);
-            return res.status(400).json({
-                status: 400,
-                message: "Kelompok harus berupa angka yang valid",
-                received_kelompok: kelompok
-            });
-        }
-        console.log("Kelompok converted:", kelompokInt);
-
-        // 3. VALIDASI KELOMPOK EXISTS - Cek kelompok ada di database
-        const existingKelompok = await prisma.Kelompok.findFirst({
-            where: { 
-                nomor: kelompokInt // ✅ FIXED: Gunakan 'nomor' sesuai schema
-            }
-        });
-
-        if (!existingKelompok) {
-            console.log("Kelompok not found:", kelompokInt);
-            return res.status(404).json({
-                status: 404,
-                message: `Kelompok ${kelompokInt} tidak ditemukan atau tidak tersedia`,
-                kelompok_searched: kelompokInt
-            });
-        }
-        console.log("Kelompok found:", existingKelompok);
-
-        // 4. Ambil data tugas untuk cek deadline
-        const kumpulTugas = await prisma.Kumpul_Tugas.findUnique({ 
-            where: { id },
-            include: {
-                // Jika ada relasi, uncomment ini
-                // Tugas: { select: { id: true, judul: true, deadline: true } }
-            }
-        });
-
+        // Ambil data tugas untuk cek deadline
+        const kumpulTugas = await prisma.Kumpul_Tugas.findUnique({ where: { id } });
         if (!kumpulTugas) {
-            console.log("Kumpul tugas not found:", id);
-            return res.status(404).json({ 
-                status: 404, 
-                message: "Pengumpulan tugas tidak ditemukan.",
-                submission_id: id
-            });
+            return res.status(404).json({ status: 404, message: "Pengumpulan tugas tidak ditemukan." });
         }
-
-        const tugas = await prisma.Tugas.findUnique({ 
-            where: { id: kumpulTugas.id_tugas },
-            select: { id: true, title: true, deadline: true } // ✅ FIXED: Gunakan 'title' sesuai schema
-        });
-
+        const tugas = await prisma.Tugas.findUnique({ where: { id: kumpulTugas.id_tugas } });
         if (!tugas) {
-            console.log("Tugas not found:", kumpulTugas.id_tugas);
-            return res.status(404).json({ 
-                status: 404, 
-                message: "Tugas tidak ditemukan.",
-                tugas_id: kumpulTugas.id_tugas
-            });
+            return res.status(404).json({ status: 404, message: "Tugas tidak ditemukan." });
         }
-
-        console.log("Tugas found:", tugas);
-
-        // Cek deadline
         if (tugas.deadline && new Date() > new Date(tugas.deadline)) {
-            console.log("Deadline passed. Current:", new Date(), "Deadline:", tugas.deadline);
-            return res.status(400).json({ 
-                status: 400, 
-                message: "Sudah lewat deadline, tidak bisa edit tugas.",
-                deadline: tugas.deadline,
-                current_time: new Date()
-            });
+            return res.status(400).json({ status: 400, message: "Sudah lewat deadline, tidak bisa edit tugas." });
         }
 
-        // 5. Update data dengan kelompok yang sudah dikonversi
         const data = await prisma.Kumpul_Tugas.update({
             where: { id },
-            data: { 
-                nama: nama.trim(),
-                nim: nim.trim(),
-                kelompok: kelompokInt, // Gunakan integer
-                link_tugas: link_tugas.trim(),
-                updateAt: new Date() // ✅ FIXED: Gunakan 'updateAt' sesuai schema
-            }
+            data: { nama, nim, kelompok, link_tugas }
         });
 
-        console.log("Tugas berhasil diedit:", data);
-
         if (data) {
-            return res.status(200).json({ 
-                status: 200, 
-                message: "Berhasil mengedit tugas", 
-                data: {
-                    ...data,
-                    tugas_info: {
-                        title: tugas.title, // ✅ FIXED: Gunakan 'title' sesuai schema
-                        deadline: tugas.deadline
-                    }
-                }
-            });
+            return res.status(200).json({ status: 200, message: "Berhasil mengedit tugas", data });
         } else {
-            console.log("Update failed but no error thrown");
-            return res.status(400).json({ 
-                status: 400, 
-                message: "Gagal mengedit tugas"
-            });
+            return res.status(400).json({ status: 400, message: "Gagal mengedit tugas", data });
         }
 
     } catch (error) {
-        console.error("=== EDIT KUMPUL TUGAS ERROR ===");
-        console.error("Error message:", error.message);
-        console.error("Error stack:", error.stack);
-        console.error("Request body:", req.body);
-        
-        // Handle specific Prisma errors
-        if (error.code === 'P2002') {
-            return res.status(409).json({
-                status: 409,
-                message: "Data duplikat: Kombinasi data sudah ada",
-                error_code: error.code
-            });
-        }
-        
-        if (error.code === 'P2003') {
-            return res.status(400).json({
-                status: 400,
-                message: "Data referensi tidak valid (Foreign key constraint)",
-                error_code: error.code
-            });
-        }
-        
-        if (error.code === 'P2025') {
-            return res.status(404).json({
-                status: 404,
-                message: "Data yang akan diupdate tidak ditemukan",
-                error_code: error.code
-            });
-        }
-
-        return res.status(500).json({ 
-            status: 500, 
-            message: "Internal Server Error", 
-            error_message: error.message,
-            timestamp: new Date()
-        });
+        console.log("Kumpul Tugas Controller Error:", error);
+        return res.status(500).json({ status: 500, message: "Internal Server Error", error });
     }
-};
+}
