@@ -74,7 +74,7 @@ const SubmissionFormModal = ({ task, onClose, onBack, onTaskSubmit, kelompokList
       setFormData({
         nama: task.Kumpul_Tugas?.[0]?.nama || "",
         nim: task.Kumpul_Tugas?.[0]?.nim || "",
-        kelompok: task.Kumpul_Tugas?.[0]?.id_kelompok?.toString() || "",
+        kelompok: task.Kumpul_Tugas?.[0]?.kelompok?.toString() || "",        
         link: task.Kumpul_Tugas?.[0]?.link_tugas || "",
       });
     }
@@ -125,7 +125,7 @@ const SubmissionFormModal = ({ task, onClose, onBack, onTaskSubmit, kelompokList
           <select name="kelompok" value={formData.kelompok} onChange={handleChange} className="w-full bg-white border border-[#a1887f] rounded-lg py-3 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-[#6d4c41]" disabled={deadlinePassed}>
             <option value="" disabled>Pilih Kelompok</option>
             {kelompokList && kelompokList.length > 0 ? (
-              kelompokList.map((opt) => (<option key={opt.id} value={opt.id}>Kelompok {opt.nomor}</option>))
+              kelompokList.map((opt) => (<option key={opt.id} value={opt.nomor}>Kelompok {opt.nomor}</option>))
             ) : (
               <option value="" disabled>Tidak ada kelompok</option>
             )}

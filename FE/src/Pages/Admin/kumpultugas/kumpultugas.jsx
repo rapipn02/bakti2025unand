@@ -204,7 +204,7 @@ export const Kumpultugas = () => {
     }
 
     try {
-      const selectedKelompokData = kelompokList.find(k => String(k.id) === String(selectedKelompok));
+      const selectedKelompokData = kelompokList.find(k => String(k.nomor) === String(selectedKelompok));
       const selectedTugasData = tugasList.find(t => t.id == selectedTugas);
       // Create CSV content
       const headers = ["No", "Name", "NIM", "Kelompok", "Tugas", "Link Tugas", "Submitted"];
@@ -265,7 +265,7 @@ export const Kumpultugas = () => {
     }
     // Jika object dan ada id, cari di kelompokList
     if (typeof kelompokData === 'object' && kelompokData?.id && kelompokList.length > 0) {
-      const found = kelompokList.find(k => String(k.id) === String(kelompokData.id));
+      const found = kelompokList.find(k => String(k.nomor) === String(kelompokData.id));
       if (found && found.nomor) {
         return `Kelompok ${found.nomor}`;
       }
@@ -273,7 +273,7 @@ export const Kumpultugas = () => {
     }
     // Jika number/string, cari di kelompokList
     if ((typeof kelompokData === 'number' || typeof kelompokData === 'string') && kelompokList.length > 0) {
-      const found = kelompokList.find(k => String(k.id) === String(kelompokData));
+      const found = kelompokList.find(k => String(k.nomor) === String(kelompokData));
       if (found && found.nomor) {
         return `Kelompok ${found.nomor}`;
       }
@@ -400,7 +400,7 @@ export const Kumpultugas = () => {
               >
                 <option value="">Pilih Kelompok *</option>
                 {kelompokList.map((kelompok) => (
-                  <option key={kelompok.id} value={kelompok.id}>
+                  <option key={kelompok.id} value={kelompok.nomor}>
                     Kelompok {kelompok.nomor}
                   </option>
                 ))}
@@ -460,7 +460,7 @@ export const Kumpultugas = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
               <p className="text-gray-600">Loading data pengumpulan tugas...</p>
               <p className="text-sm text-gray-500 mt-2">
-                Kelompok: {kelompokList.find(k => k.id == selectedKelompok)?.nomor} | 
+                Kelompok: {kelompokList.find(k => k.nomor == selectedKelompok)?.nomor} | 
                 Tugas: {tugasList.find(t => t.id == selectedTugas)?.title}
               </p>
             </div>
@@ -474,7 +474,7 @@ export const Kumpultugas = () => {
                       <strong>Menampilkan pengumpulan tugas untuk:</strong>
                     </p>
                     <p className="text-emerald-800 font-medium">
-                      Kelompok: {kelompokList.find(k => k.id == selectedKelompok)?.nomor} | 
+                      Kelompok: {kelompokList.find(k => k.nomor == selectedKelompok)?.nomor} | 
                       Tugas: {tugasList.find(t => t.id == selectedTugas)?.title}
                     </p>
                   </div>
@@ -532,7 +532,7 @@ export const Kumpultugas = () => {
                           <td className="py-4 px-6 text-gray-700">{item.nim}</td>
                           <td className="py-4 px-6 text-gray-700">
                             {/* Selalu tampilkan kelompok sesuai filter */}
-                            {`Kelompok ${kelompokList.find(k => String(k.id) === String(selectedKelompok))?.nomor || 'N/A'}`}
+                            {`Kelompok ${kelompokList.find(k => String(k.nomor) === String(selectedKelompok))?.nomor || 'N/A'}`}
                           </td>
                           <td className="py-4 px-6 text-gray-700">
                             {getTugasTitle(item.tugas)}
