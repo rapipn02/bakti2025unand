@@ -240,10 +240,10 @@ export const Login = () => {
             `,
           }}
         >
-          <h1 className="text-2xl font-['Titan_One'] text-[#623B1C] drop-shadow-lg">
+          <h1 className="text-4xl font-['Titan_One'] text-[#623B1C] drop-shadow-lg">
             Selamat Datang <br /> di
           </h1>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-['Titan_One'] text-[#623B1C] drop-shadow-lg mt-2">
+          <h2 className="text-4xl sm:text-3xl md:text-4xl font-['Titan_One'] text-[#623B1C] drop-shadow-lg mt-2">
             <span className="block">BAKTI UNAND</span>
             <span className="block">2025</span>
           </h2>

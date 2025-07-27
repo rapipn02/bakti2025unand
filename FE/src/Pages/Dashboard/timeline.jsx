@@ -13,13 +13,7 @@ const scheduleItems = [
     title: "Ranger Afeksi",
     bgColor: "bg-[#69432A]",
   },
-  {
-    type: "item",
-    date: "09 AGT",
-    title: "Gladi Kotor",
-    subtitle: "Panitia dan Mentor",
-    bgColor: "bg-[#69432A]",
-  },
+
   {
     type: "item",
     date: "10 AGT",
@@ -119,10 +113,10 @@ export const Timeline = () => {
                 {scheduleItems[0].dates.map((date, idx) => (
                   <div key={idx} className="relative">
                     <div className="bg-white shadow-md rounded-md px-2 py-1 sm:px-3 sm:py-2 text-center border-2 border-[#623B1C]">
-                      <p className="font-bold text-xs sm:text-sm md:text-base text-[#623B1C]">
+                      <p className="font-bold text-[1.2rem] sm:text-[1.2rem] md:text-[1.2rem] text-[#623B1C]">
                         {date.split(" ")[0]}
                       </p>
-                      <p className="text-[10px] sm:text-xs text-gray-600">
+                      <p className="text-[1.2rem] sm:text-[1.2rem] md:text-[1.2rem] text-gray-600">
                         {date.split(" ")[1]}
                       </p>
                     </div>
@@ -159,10 +153,10 @@ export const Timeline = () => {
                     data-aos="fade-up"
                   >
                     <div className="p-2 w-16 sm:w-20 text-center flex-shrink-0 font-['League_Spartan'] flex flex-col justify-center">
-                      <p className="font-bold text-lg sm:text-xl md:text-2xl text-[#623B1C]">
+                      <p className="font-bold text-base sm:text-lg md:text-xl text-[#623B1C]">
                         {item.date.split(" ")[0]}
                       </p>
-                      <p className="text-xs sm:text-sm font-bold text-[#623B1C]">
+                      <p className="text-xs sm:text-sm md:text-base font-bold text-[#623B1C]">
                         {item.date.split(" ")[1]}
                       </p>
                     </div>

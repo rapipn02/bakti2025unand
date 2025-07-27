@@ -120,9 +120,9 @@ export const Task = () => {
             className="bg-[#FBF3E6] border border-[#D9BFA2] rounded-2xl shadow-lg p-8 text-center w-full max-w-xl col-start-1 row-start-1 flex flex-col items-center"
             data-aos="fade-up"
           >
-            {/* Judul */}
+           {/* Judul */}
             <div
-              className="absolute -top-6 left-1/2 -translate-x-1/2 px-6 py-2 text-[#69432A] font-['Titan_One'] text-3xl"
+              className="absolute -top-6 left-1/2 -translate-x-1/2 px-6 py-2 text-[#69432A] font-['Titan_One'] text-5xl lg:text-5xl whitespace-nowrap"
               style={{
                 textShadow:
                   "-2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white, 0 0 10px rgba(0,0,0,0.5), 0 0 15px rgba(0,0,0,0.4)",
@@ -136,7 +136,7 @@ export const Task = () => {
             <p className="mt-6 text-lg text-[#5E4A3A] font-['Poppins'] font-normal">
               Are you ready for BAKTI CHALLENGE ?
             </p>
-            <p className="mt-4 text-base font-normal text-[#5E4A3A] font-['Poppins'] max-w-md">
+            <p className="mt-4 text-lg font-normal text-[#5E4A3A] font-['Poppins'] max-w-md">
               Ada beberapa tugas yang harus kamu selesaikan sebelum kamu
               mengikuti kegiatan BAKTI UNAND 2025. Setiap mahasiswa baru
               Universitas Andalas tahun 2025 harus menyelesaikan beberapa tugas
