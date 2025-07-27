@@ -191,7 +191,7 @@ export const About = () => {
               {/* Tombol di tengah seluruh card */}
               <div className="flex justify-center mt-6">
                 <a
-                  href="https://drive.google.com/drive/folders/1SS-WReEqfOxpZfYqvqHrsh7YXF8DKR3M?usp=sharing"
+                  href="https://www.instagram.com/fasil.unand?igsh=b2l6ODZyZmlvdWc%3D"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-8 py-3 bg-[#623B1C] text-white font-bold font-['Poppins'] rounded-xl shadow-md border transition duration-300 hover:scale-105 cursor-pointer"
