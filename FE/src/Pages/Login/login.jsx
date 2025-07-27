@@ -181,14 +181,7 @@ export const Login = () => {
                   )}
                 </button>
               </div>
-              <div className="text-right text-sm mt-1">
-                <Link
-                  to="/lupasandi"
-                  className="text-[#603813] hover:underline"
-                >
-                  Lupa Kata Sandi?
-                </Link>
-              </div>
+              
             </div>
 
             <button
