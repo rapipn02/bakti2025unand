@@ -106,7 +106,7 @@ const Footer = () => {
               <img src={Instagram} alt="Instagram" className="w-10 h-10" />
             </a>
             <a
-              href="https://www.facebook.com/baktiunand?mibextid=ZbWKwL"
+              href="https://open.spotify.com/artist/2YulxzYysCoRAtS0xxvmIi?si=TOr13L3eSJaGeFiQm_Qqhw"
               target="_blank"
               rel="noopener noreferrer"
             >
