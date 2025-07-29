@@ -56,6 +56,18 @@ const Footer = () => {
           <h2 className="text-lg font-bold mb-3 text-center">WEBSITE</h2>
           <div className="space-y-4 text-sm text-center">
             <div>
+              <p className="font-bold font-['Poppins']">Project Manager</p>
+              <a
+                href="https://www.instagram.com/fajri.ramdhan_?utm_source=ig_web_button_share_sheet&igsh=c2NsNnd3YmozdDN3"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 justify-center text-white "
+              >
+                <img src={Instagram} alt="Instagram" className="w-5 h-5" />
+                Al Fajri Ramadhan
+              </a>
+            </div>
+            <div>
               <p className="font-bold font-['Poppins']">Frontend Developer</p>
               <a
                 href="https://www.instagram.com/daf_nal/"

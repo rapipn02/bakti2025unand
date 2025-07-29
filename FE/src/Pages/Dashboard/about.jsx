@@ -92,9 +92,9 @@ export const About = () => {
           BAKTI atau Bimbingan Aktivitas Kemahasiswaan dalam Tradisi Ilmiah
           adalah kegiatan pengenalan terhadap program pendidikan, tradisi ilmiah
           dan pembinaan kegiatan kemahasiswaan di perguruan tinggi bagi
-          mahasiswa baru Universitas Andalas.BAKTI UNAND menghadirkan
+          Peserta Bakti Universitas Andalas.BAKTI UNAND menghadirkan
           serangkaian kegiatan yang bertujuan untuk mengenalkan lingkungan
-          kampus kepada mahasiswa baru Universitas Andalas.
+          kampus kepada Peserta Universitas Andalas.
         </h2>
 
         <div data-aos="zoom-in">
@@ -141,7 +141,7 @@ export const About = () => {
                   </h3>
                   <p className="font-bold text-center">
                     Salah satu rangkaian kegiatan Pra-BAKTI yang bertujuan untuk
-                    membangun komunikasi antara mentor dengan mahasiswa baru
+                    membangun komunikasi antara mentor dengan Peserta
                     serta membangun keakraban dalam satu kelompok.
                   </p>
                 </div>
@@ -178,10 +178,10 @@ export const About = () => {
                       textShadow: `-2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white`,
                     }}
                   >
-                    Maba will get cool mentors
+                    Participant's will get cool mentors
                   </h3>
                   <p className="font-bold text-center">
-                    Mahasiswa atau mahasiswi baru akan didampingi uda uni mentor
+                    Peserta akan didampingi uda uni mentor
                     yang siap membantu serta mendampingi selama rangkaian
                     kegiatan BAKTI.
                   </p>
@@ -220,12 +220,12 @@ export const About = () => {
                         "-2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white",
                     }}
                   >
-                    Maba's Task
+                    Bakti's Task
                   </h3>
                   <p className="font-bold text-base text-center">
-                    Setiap mahasiswa baru Universitas Andalas akan diberikan
+                    Setiap Peserta Bakti Universitas Andalas akan diberikan
                     penugasan selama rangkaian kegiatan BAKTI dengan harapan
-                    mahasiswa baru mendapatkan output sesuai dengan penugasan
+                    Peserta mendapatkan output sesuai dengan penugasan
                     yang telah diberikan.
                   </p>
                 </div>

@@ -129,16 +129,16 @@ export const Task = () => {
               }}
               data-aos="zoom-in"
             >
-              BAKTI CHALLENGE
+              BAKTI'S TASK
             </div>
 
             {/* Deskripsi */}
             <p className="mt-6 text-lg text-[#5E4A3A] font-['Poppins'] font-normal">
-              Are you ready for BAKTI CHALLENGE ?
+              Are you ready for BAKTI TASK ?
             </p>
             <p className="mt-4 text-lg font-normal text-[#5E4A3A] font-['Poppins'] max-w-md">
               Ada beberapa tugas yang harus kamu selesaikan sebelum kamu
-              mengikuti kegiatan BAKTI UNAND 2025. Setiap mahasiswa baru
+              mengikuti kegiatan BAKTI UNAND 2025. Setiap Peserta Bakti
               Universitas Andalas tahun 2025 harus menyelesaikan beberapa tugas
               yang sudah kami siapkan untuk mengenalkan kehidupan kampus dan
               menunjukkan keterampilan diri kamu.

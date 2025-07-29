@@ -72,7 +72,7 @@ export const Timeline = () => {
       <img
         src={MotifBawah}
         alt="Motif Bawah"
-        className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-full max-w-sm sm:max-w-md md:max-w-2xl z-15"
+        className="absolute -bottom-37 left-1/2 -translate-x-1/2 w-full max-w-sm sm:max-w-md md:max-w-2xl z-15"
         data-aos="fade-up"
       />
 
@@ -89,7 +89,7 @@ export const Timeline = () => {
           }}
           data-aos="zoom-in"
         >
-          <span>MABA'S</span>
+          <span>BAKTI'S</span>
           <br />
           <span>SCHEDULE</span>
         </h1>
