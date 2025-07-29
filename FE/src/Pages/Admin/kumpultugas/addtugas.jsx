@@ -6,6 +6,10 @@ import { Menu, ArrowLeft } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 import { addTugas } from "../../../utils/tugasApi";
 
+const MAX_DESCRIPTION_LENGTH = 1000;
+const WARNING_THRESHOLD = 0.9;
+
+
 export const AddTugas = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,12 +23,19 @@ export const AddTugas = () => {
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const { name, value } = e.target;
+  
+  // Validasi khusus untuk description
+  if (name === 'description' && value.length > MAX_DESCRIPTION_LENGTH) {
+    toast.error(`Deskripsi tidak boleh lebih dari ${MAX_DESCRIPTION_LENGTH} karakter`);
+    return;
+  }
+  
+  setFormData(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
 
   const handleDateChange = (e) => {
   const { name, value } = e.target;
@@ -50,11 +61,16 @@ export const AddTugas = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   
-  // Validasi yang lebih baik
-  if (!formData.title?.trim()) {
+
+   if (!formData.title?.trim()) {
     toast.error('Judul tidak boleh kosong');
     return;
   }
+  // Validasi panjang deskripsi
+if (formData.description && formData.description.length > MAX_DESCRIPTION_LENGTH) {
+  toast.error(`Deskripsi tidak boleh lebih dari ${MAX_DESCRIPTION_LENGTH} karakter`);
+  return;
+}
   
   if (!formData.deadline) {
     toast.error('Tanggal deadline harus diisi');
@@ -94,7 +110,13 @@ console.log('ISO format:', deadlineString);
     console.log('Submitting tugas:', tugasPayload); // Debug log
     
     const result = await addTugas(tugasPayload);
-
+    console.log('Debug - Data yang akan dikirim:', {
+    title: tugasPayload.title,
+    description: tugasPayload.description,
+    deadline: tugasPayload.deadline,
+    titleLength: tugasPayload.title?.length,
+    descLength: tugasPayload.description?.length
+});
     if (result.success) {
       toast.success(result.message || 'Tugas berhasil ditambahkan');
       // Reset form
@@ -205,23 +227,62 @@ console.log('ISO format:', deadlineString);
                   />
                 </div>
 
-                <div className="mb-6">
-                  <label
-                    htmlFor="description"
-                    className="block text-gray-700 text-sm font-medium mb-2"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Input Description"
-                    rows="4"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
+               <div className="mb-6">
+  <label
+    htmlFor="description"
+    className="block text-gray-700 text-sm font-medium mb-2"
+  >
+    Description
+  </label>
+  <textarea
+    id="description"
+    name="description"
+    value={formData.description}
+    onChange={handleInputChange}
+    placeholder="Input Description (Maksimal 1000 karakter)"
+    rows="4"
+    maxLength={MAX_DESCRIPTION_LENGTH}
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+      formData.description.length > MAX_DESCRIPTION_LENGTH * WARNING_THRESHOLD 
+        ? 'border-amber-400' 
+        : 'border-gray-300'
+    }`}
+  />
+  
+  {/* Counter dan Status */}
+  <div className="flex justify-between items-center mt-2">
+    <div className="flex items-center gap-2">
+      <span className={`text-xs ${
+        formData.description.length > MAX_DESCRIPTION_LENGTH * WARNING_THRESHOLD
+          ? 'text-amber-600 font-medium'
+          : 'text-gray-500'
+      }`}>
+        {formData.description.length}/{MAX_DESCRIPTION_LENGTH} karakter
+      </span>
+      
+      {/* Warning indicator */}
+      {formData.description.length > MAX_DESCRIPTION_LENGTH * WARNING_THRESHOLD && (
+        <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded">
+          Mendekati batas maksimum
+        </span>
+      )}
+    </div>
+    
+    {/* Progress bar */}
+    <div className="w-20 bg-gray-200 rounded-full h-1.5">
+      <div 
+        className={`h-1.5 rounded-full transition-all ${
+          formData.description.length > MAX_DESCRIPTION_LENGTH * WARNING_THRESHOLD
+            ? 'bg-amber-500'
+            : 'bg-emerald-500'
+        }`}
+        style={{ 
+          width: `${Math.min((formData.description.length / MAX_DESCRIPTION_LENGTH) * 100, 100)}%` 
+        }}
+      ></div>
+    </div>
+  </div>
+</div>
 
                 <div className="mb-6">
                   <label
