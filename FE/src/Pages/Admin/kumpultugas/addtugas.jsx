@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../../../component/SidebarAdmin";
 import logoadmin from "../../../assets/admin/admin.svg";
 import { Menu, ArrowLeft } from "lucide-react";
-import { Toaster, toast } from "react-hot-toast";import { addTugas } from "../../../utils/tugasApi";
+import { Toaster, toast } from "react-hot-toast";
+import { addTugas } from "../../../utils/tugasApi";
 
 export const AddTugas = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -25,59 +26,98 @@ export const AddTugas = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.title || !formData.deadline) {
-      toast.error('Judul dan deadline harus diisi');
+  const handleDateChange = (e) => {
+  const { name, value } = e.target;
+  
+  // Validasi tanggal tidak di masa lalu
+  if (name === 'deadline' && value) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(value);
+    
+    if (selectedDate < today) {
+      toast.error('Tanggal deadline tidak boleh di masa lalu');
       return;
     }
-    // Gabungkan date dan time
-    let deadlineISO = formData.deadline;
-    if (formData.deadlineHour !== '' && formData.deadlineMinute !== '') {
-      // Format jam dan menit ke dua digit
-      const hour = String(formData.deadlineHour).padStart(2, '0');
-      const minute = String(formData.deadlineMinute).padStart(2, '0');
-      const localDate = new Date(formData.deadline + 'T' + hour + ':' + minute + ':00');
-      localDate.setHours(localDate.getHours());
-      deadlineISO = localDate.toISOString();
-    } else {
-      // Jika tidak ada jam, asumsikan jam 00:00 WIB
-      const localDate = new Date(formData.deadline + 'T00:00:00');
-      localDate.setHours(localDate.getHours() - 7);
-      deadlineISO = localDate.toISOString();
-    }
-    try {
-      setLoading(true);
-      const result = await addTugas({
-        title: formData.title,
-        description: formData.description,
-        deadline: deadlineISO
-      });
+  }
+  
+  setFormData(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
 
-      if (result.success) {
-        toast.success(result.message || 'Tugas berhasil ditambahkan');
-        // Reset form
-        setFormData({
-          title: '',
-          description: '',
-          deadline: '',
-          deadlineHour: '',
-          deadlineMinute: ''
-        });
-        // Navigate back to tugas list after short delay
-        setTimeout(() => {
-          navigate('/tugas');
-        }, 1500);
-      } else {
-        toast.error(result.error || 'Gagal menambahkan tugas');
-      }
-    } catch (error) {
-      console.error('Error adding tugas:', error);
-      toast.error('Terjadi kesalahan saat menambahkan tugas');
-    } finally {
-      setLoading(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Validasi yang lebih baik
+  if (!formData.title?.trim()) {
+    toast.error('Judul tidak boleh kosong');
+    return;
+  }
+  
+  if (!formData.deadline) {
+    toast.error('Tanggal deadline harus diisi');
+    return;
+  }
+  
+  // Validasi tanggal tidak di masa lalu
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const selectedDate = new Date(formData.deadline);
+  if (selectedDate < today) {
+    toast.error('Tanggal deadline tidak boleh di masa lalu');
+    return;
+  }
+  
+  try {
+    setLoading(true);
+    
+    // Format deadline yang konsisten
+    // Format deadline yang konsisten
+const hour = formData.deadlineHour !== '' ? String(formData.deadlineHour).padStart(2, '0') : '00';
+const minute = formData.deadlineMinute !== '' ? String(formData.deadlineMinute).padStart(2, '0') : '00';
+
+// Buat Date object dan convert ke ISO string (otomatis dengan timezone)
+const localDate = new Date(`${formData.deadline}T${hour}:${minute}:00`);
+const deadlineString = localDate.toISOString(); // Hasil: 2025-07-31T07:00:00.000Z (UTC)
+
+console.log('Original input:', `${formData.deadline}T${hour}:${minute}:00`);
+console.log('ISO format:', deadlineString);
+    
+    const tugasPayload = {
+      title: formData.title.trim(),
+      description: formData.description?.trim() || '',
+      deadline: deadlineString
+    };
+    
+    console.log('Submitting tugas:', tugasPayload); // Debug log
+    
+    const result = await addTugas(tugasPayload);
+
+    if (result.success) {
+      toast.success(result.message || 'Tugas berhasil ditambahkan');
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        deadline: '',
+        deadlineHour: '',
+        deadlineMinute: ''
+      });
+      setTimeout(() => {
+        navigate('/tugas');
+      }, 1500);
+    } else {
+      toast.error(result.error || 'Gagal menambahkan tugas');
     }
-  };
+  } catch (error) {
+    console.error('Submit Error:', error);
+    toast.error('Terjadi kesalahan saat menambahkan tugas');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex h-screen bg-[#f5f6fa] font-sans relative">
@@ -195,7 +235,8 @@ export const AddTugas = () => {
                     id="deadline"
                     name="deadline"
                     value={formData.deadline}
-                    onChange={handleInputChange}
+                    onChange={handleDateChange}
+                    min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     required
                   />
