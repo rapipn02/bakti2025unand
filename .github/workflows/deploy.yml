@@ -45,6 +45,8 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --timeout=600s \
+            --memory=256Mi \
+            --cpu=0.25 \
             --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_TOKEN_KEY=${{ secrets.JWT_TOKEN_KEY }},JWT_REFRESH_TOKEN_KEY=${{ secrets.JWT_REFRESH_TOKEN_KEY }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
 
   build-and-deploy-fe:
@@ -86,5 +88,7 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --timeout=600s \
+            --memory=256Mi \
+            --cpu=0.25 \
             --port=80 \
             --set-env-vars "VITE_GOOGLE_CLIENT_ID=${{ env.VITE_GOOGLE_CLIENT_ID }},VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }}"
