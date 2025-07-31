@@ -30,7 +30,7 @@ const TaskModal = ({ task, onClose, onKumpulClick }) => (
   >
     <div
       onClick={(e) => e.stopPropagation()}
-      className="bg-white p-8 rounded-2xl shadow-2xl relative border-2 border-[#623B1C] w-full max-w-4xl min-h-[500px] flex flex-col"
+      className="bg-white p-8 rounded-2xl shadow-2xl relative border-2 border-[#623B1C] w-full max-w-4xl min-h-[500px] overflow-hidden flex flex-col"
     >
       <h2 className="text-3xl font-bold text-center font-['Titan_One'] text-[#6d4c41]">
         {task.title}
@@ -38,7 +38,7 @@ const TaskModal = ({ task, onClose, onKumpulClick }) => (
       <hr className="border-t-2 border-[#a1887f] my-4" />
       <div className="font-[poppins] text-[#623B1C] mt-4 flex-grow">
         <p className="font-bold text-lg">Deskripsi Tugas :</p>
-        <p className="mt-2 text-base">{task.description}</p>
+        <p className="mt-2 text-base overflow-y-auto max-h-[300px] pr-2">{task.description}</p>
       </div>
       <div className="flex justify-end mt-8">
         <button
